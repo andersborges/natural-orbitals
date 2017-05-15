@@ -1,5 +1,4 @@
 import numpy as np
-from gpaw import restart
 from transport_tools import partition_junc, plot_basis, lowdin
 from gpaw.lcao.tools import get_bfi2
 
