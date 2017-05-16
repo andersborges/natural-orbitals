@@ -22,7 +22,7 @@ for atom in mol:
 
 
 #### Initialize ####
-CH4 = NBO(h, s,ne, mol, basis_dic, model = True) #initialize
+CH4 = NO(h, s,ne, mol, basis_dic, model = True) #initialize
 
 print "Natural electronic contribution to atomic charges: ", CH4.get_natural_charges() # natural atomic charges (nuclear charge not included)
 

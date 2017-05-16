@@ -1,5 +1,11 @@
 import numpy as np
 
+def lowdin(s_mm):
+	"""Return S^-1/2"""
+	eig, rot_mm = np.linalg.eig(s_mm) #find eigenvalues overlap matrix
+	eig = np.abs(eig)
+	rot_mm = np.dot(rot_mm / np.sqrt(eig), rot_mm.T.conj()) #rotation matrix S^-1/2. 
+	return rot_mm
 
 class NO:
 	"""Natural Orbitals class.
@@ -29,18 +35,11 @@ class NO:
 			from ase import Atoms
 			self.model = Atoms() ###### object for visualization of effective hamiltonian
 
-	def lowdin(s_mm):
-		"""Return S^-1/2"""
-		print s_mm
-		eig, rot_mm = np.linalg.eig(s_mm) #find eigenvalues overlap matrix
-		eig = np.abs(eig)
-		rot_mm = np.dot(rot_mm / np.sqrt(eig), rot_mm.T.conj()) #rotation matrix S^-1/2. 
-		return rot_mm
 
 	def get_NAO(self, threshold = 1.90):
 		""" 'threshold': Threshold value for occupation of lone-pair. """
 		from copy import deepcopy
-		if self.model: 
+		if type(self.model)!='bool':
 			from ase import Atom
 		print "Getting NAOs..."
 		#normalize basis
@@ -68,13 +67,14 @@ class NO:
 		eig /= np.sqrt(norms_n)
 		C = np.dot(rot_lowdin, eig)
 		print "Number of electron pairs:", self.ne
-		E_f = 0.5*(eig_v[self.ne-1]+eig_v[self.ne])
-		Lambda = np.zeros(r.shape, dtype = 'complex')
+		#E_f = 0.5*(eig_v[self.ne-1]+eig_v[self.ne])
+		Lambda = np.zeros((self.dim, self.dim), dtype = 'complex')
 		for n in range(self.ne):
 			Lambda[n,n] = 2.0
 		D = np.dot(C, np.dot(Lambda, C.T.conj()))
 		# P = SDS
 		self.P = np.dot(self.s, np.dot(D, self.s))
+
 		####### formation of PNAOs #######
 		#make dictionary of saved indices on each atom
 		d = {}
@@ -113,22 +113,22 @@ class NO:
 			PNAOs[bfs[0]:bfs[-1]+1, bfs[0]:bfs[-1]+1] = n_A
 			for n, bf in enumerate(bfs):
 				occ_PNAOs[bf, bf] = w_A_L[n].real
-
 		norms_n = np.dot(np.dot(PNAOs.T.conj(), self.s), PNAOs).diagonal()
 		PNAOs /= np.sqrt(norms_n) # ensure normalization
-		self.PNAOs = PNAOs[:,:]
+		self.PNAOs = PNAOs
+
+
 		######### Occupancy-weighted interatomic orthogonalization within NMB #####
-		s_PNAO =  np.dot(PNAOs.T.conj(), np.dot(self.s, PNAOs))
-		NAOs = deepcopy(PNAOs) # copy and work from PNAOs
-		bfs =self.NMB_indices
+		s_PNAO =  np.dot(self.PNAOs.T.conj(), np.dot(self.s, self.PNAOs))
+		NAOs = deepcopy(self.PNAOs) # copy and work from PNAOs
+		bfs = self.NMB_indices
 		W_sub = occ_PNAOs.take(bfs,axis=0).take(bfs, axis=1)
 		s_sub = s_PNAO.take(bfs,axis=0).take(bfs, axis=1)
 		O_w = np.dot(W_sub, lowdin(np.dot(W_sub, np.dot(s_sub,W_sub.T.conj()))))
-		norms_n = np.dot(np.dot(O_w.T.conj(), s_sub), O_w).diagonal()
-		O_w /= np.sqrt(norms_n) # ensure normalization
 		test = NAOs.take(range(self.dim),axis=0).take(bfs, axis=1)
 		for n, bf in enumerate(bfs):
 			NAOs[:,bf] = np.dot(O_w[:,n],test.T.conj())	
+
 		#### Gram-Schmidt orthogonalize unoccupied (NRB) onto occupied (NMB) ###
 		print "Natural minimal basis (NMB):", self.NMB_indices
 		print "Natural Rydberg basis (NRB)", self.NRB_indices
@@ -145,21 +145,17 @@ class NO:
 		norms_n = np.dot(np.dot(NAOs.T.conj(), self.s), NAOs).diagonal()
 		NAOs /= np.sqrt(norms_n) # ensure normalization
 
+
 		####### Restoration of natural character of the NRB ####
 		P_restore = np.dot(NAOs.T.conj(), np.dot(self.P, NAOs))
 		s_restore = np.dot(NAOs.T.conj(), np.dot(self.s, NAOs))
-		restore = np.identity(self.dim)
 
 		for n, atom in enumerate(self.mol):
 			if len(self.NRB_indices)==0:
 				break
-		#	print "atom ", n, atom.symbol
+#			print "atom ", n, atom.symbol
 			bfs = self.basis_dic[n]
 			bfs = list(set(bfs).intersection(self.NRB_indices)) 
-#			# if atom.symbol in ['H']:
-			# 	bfs= bfs[1:]
-			# if atom.symbol in ['S','N', 'C','O','P', 'Si']:	
-			# 	bfs = bfs[4:]
 			p_sub = P_restore.take(bfs,axis=0).take(bfs, axis=1)
 			s_sub = s_restore.take(bfs,axis=0).take(bfs, axis=1)	
 			## lowdin orthogonalize
@@ -168,39 +164,46 @@ class NO:
 			p_low = np.dot(rlow.T.conj(), np.dot(p_sub, rlow))
 			s_low = np.dot(rlow.T.conj(), np.dot(s_sub, rlow))
 			## solve generalized eigenvalue problem
-			w_A_L, n_A_L = np.linalg.eig(p_low)
-			sort_list = w_A_L.real.argsort()[::-1]
-			w_A_L = w_A_L[sort_list]
+			w_A_L, n_A_L = np.linalg.eigh(p_low) #np.linalg.eigh ensures linearly independent eigenvectors. This is related to numerical problem indicated in section 4.a of Appendix. 
+			sort_list = np.abs(w_A_L).argsort()[::-1]
+			w_A_L = w_A_L[sort_list].real
 			n_A_L = n_A_L.take(sort_list, axis=1)
 			norms_n = np.dot(np.dot(n_A_L.T.conj(), s_low), n_A_L).diagonal()
 			n_A_L /= np.sqrt(norms_n) #normalize lowdin basis
 			n_A = np.dot(rlow, n_A_L) ### transform to basis prior to this loop
 			test = NAOs.take(range(self.dim),axis=0).take(bfs, axis=1)
-			for n, bf in enumerate(bfs):
-			 	occ_PNAOs[bf, bf] = w_A_L[n].real
-				NAOs[:,bf] = np.dot(n_A[:,n],test.T.conj())	
+			for m, bf in enumerate(bfs):
+			 	occ_PNAOs[bf, bf] = np.abs(w_A_L[m].real)
+				if occ_PNAOs[bf, bf]<10**(-8): #
+					occ_PNAOs[bf, bf] = 10**(-8)#resolve numerical problem as indicated in section 4.a of Appendix
+				NAOs[:,bf] = np.dot(n_A[:,m],test.T.conj())	
 
 		norms_n = np.dot(np.dot(NAOs.T.conj(), self.s), NAOs).diagonal()
 		NAOs /= np.sqrt(norms_n) # ensure normalization
+
+
 		####### occupancy weighted orthogonalization of NRB ######
 		if len(self.NRB_indices)>0:
 			self.s_PNAO =  np.dot(NAOs.T.conj(), np.dot(self.s, NAOs))
 			bfs =self.NRB_indices
 			W_sub = occ_PNAOs.take(bfs,axis=0).take(bfs, axis=1)
-			#print W_sub
-			#quit()
 			s_sub = self.s_PNAO.take(bfs,axis=0).take(bfs, axis=1)
 			O_w = np.dot(W_sub, lowdin(np.dot(W_sub, np.dot(s_sub,W_sub.T.conj()))))
 			norms_n = np.dot(np.dot(O_w.T.conj(), s_sub), O_w).diagonal()
 			O_w /= np.sqrt(norms_n) # ensure normalization
 			test = NAOs.take(range(self.dim),axis=0).take(bfs, axis=1)
-			for n, bf in enumerate(bfs):
+#			ok = []
+#			problem = []
+			for n, bf in enumerate(bfs): #express in local basis
+#				print O_w[:,n].max(), bf
 				NAOs[:,bf] = np.dot(O_w[:,n],test.T.conj())	
-
 		norms_n = np.dot(np.dot(NAOs.T.conj(), self.s), NAOs).diagonal()
 		NAOs /= np.sqrt(norms_n) # ensure normalization
 
+
+
 		####### Formation of final NAOs ########
+
 		P_test = np.dot(NAOs.T.conj(), np.dot(self.P, NAOs))
 		s_test = np.dot(NAOs.T.conj(), np.dot(self.s, NAOs))
 
@@ -209,13 +212,15 @@ class NO:
 			p_sub = P_test.take(bfs,axis=0).take(bfs, axis=1)
 			s_sub = s_test.take(bfs,axis=0).take(bfs, axis=1)	
 			## solve eigenvalue problem
-			w_A, n_A = np.linalg.eig(p_sub)
+			w_A, n_A = np.linalg.eigh(p_sub)
 			sort_list = w_A.real.argsort()[::-1]
 			w_A = w_A[sort_list]
 			n_A = n_A.take(sort_list, axis=1)
 			norms_n = np.dot(n_A.T.conj(), np.dot(s_sub, n_A)).diagonal()
 			n_A /= np.sqrt(norms_n) #normalize basis
 			NAOs[:,bfs[0]:bfs[-1]+1] = np.dot(NAOs[:,bfs[0]:bfs[-1]+1], n_A)
+			norms_n = np.dot(np.dot(NAOs.T.conj(), self.s), NAOs).diagonal()
+			NAOs /= np.sqrt(norms_n) # ensure normalization
 		#	# check for bound states
 			for k, n_i in enumerate(w_A.real):
 				if n_i<threshold:
@@ -227,14 +232,12 @@ class NO:
 				d[n] = d[n]+1
 				self.PNHO_indices.append(bfs[k])
 		self.d = d
-		norms_n = np.dot(np.dot(NAOs.T.conj(), self.s), NAOs).diagonal()
-		NAOs /= np.sqrt(norms_n) # ensure normalization
 		print "Bound states/one-pairs (atom, number of bound states): ", self.d
 		self.NAOs = NAOs[:,:]
 		self.s_NAO = np.dot(self.NAOs.T.conj(), np.dot(self.s, self.NAOs))
 		self.P_NAO = np.dot(self.NAOs.T.conj(), np.dot(self.P, self.NAOs))
 
-		print "Electrons in occupied NAOs", np.trace(self.P_NAO.take(self.NMB_indices, axis=0).take(self.NMB_indices,axis=1))
+		print "Electrons in occupied NAOs", np.trace(self.P_NAO.take(self.NMB_indices, axis=0).take(self.NMB_indices,axis=1)).real
 		print "Total electrons", self.ne*2
 		print "Percentage of electrons represented by NMB:",np.trace(self.P_NAO.take(self.NMB_indices, axis=0).take(self.NMB_indices,axis=1)).real/(2*self.ne)*100
 
@@ -252,20 +255,21 @@ class NO:
 
 	def get_natural_hybrids(self, threshold=1.90):
 		"""Implementation after Foster, J. P.; Weinhold, F. J. Am. Chem. Soc. 1980, 102 (22), 7211. """
-		if type(False)!='bool':
+		if type(self.model)!='bool':
 			from ase import Atom
-		if type(self.NAOs)==False:
+		if type(self.NAOs)==type(False):
 			self.get_NAO()
-		if type(self.NHOs)==False:
+		if type(self.NHOs)!=type(False):
 			return self.NHOs
 		###### deplete lone-pairs and bound states #####
+
 		for n, atom in enumerate(self.mol): 
 			bfs = self.basis_dic[n]
 			p_sub = self.P_NAO.take(bfs,axis=0).take(bfs, axis=1)
 			#deplete lone pairs and bound states
 		#		print "Depleting", d[n]
 			for l in range(self.d[n]):
-		#		print "l", l
+#				print "l", l
 				p_sub-=self.P_NAO[bfs[l],bfs[l] ]*np.dot(self.PNHO.take(bfs,axis=0).take([l], axis=1), self.PNHO.take(bfs,axis=0).take([l], axis=1).T.conj())
 			self.P_NAO[bfs[0]:bfs[-1]+1,bfs[0]:bfs[-1]+1]= p_sub
 
@@ -287,8 +291,6 @@ class NO:
 				sort_list = n_A.real.argsort()[::-1]
 				n_A = n_A[sort_list]
 				c_A = c_A.take(sort_list, axis=1)
-		#		print n_A[:7].real, atom.index
-		#		print m, n_A.real.sum(), n_A.real
 				for k, n_i in enumerate(n_A):
 		#			print "Trying index", k,"bfs:",  bfs[k], "occ.:", n_i
 					if n_i<threshold:
@@ -296,7 +298,7 @@ class NO:
 		#			print "found hybrid", n, atom.symbol, m, neigh.symbol
 					if self.model!=False:
 						self.model+= Atom('X',atom.position+0.25*(neigh.position-atom.position))
-					self.PNHO[bfs1[0]:bfs1[-1]+1, bfs[self.d[n]]] =np.dot(self.PNAOs[bfs1[0]:bfs1[-1]+1,bfs1[0]:bfs1[-1]+1], c_A[:len(bfs1), k]) #rotate to local basis
+					self.PNHO[bfs1[0]:bfs1[-1]+1, bfs[self.d[n]]] =np.dot(self.NAOs[bfs1[0]:bfs1[-1]+1,bfs1[0]:bfs1[-1]+1], c_A[:len(bfs1), k]) #rotate to local basis
 					self.PNHO_indices.append(bfs1[self.d[n]])
 					self.d[n] = self.d[n]+1
 		if self.model!=False:
@@ -305,7 +307,6 @@ class NO:
 
 		norms_n = np.dot(np.dot(self.PNHO.T.conj(), self.s), self.PNHO).diagonal()
 		self.PNHO /= np.sqrt(norms_n)
-
 		print "Bound states and electron pairs in bonds: (atom, number of bound states) ", self.d
 
 		#plot_basis( PNHO,mol, PNHO_indices , folder_name='PNHO', vacuum=3.0)
@@ -315,14 +316,14 @@ class NO:
 		##### Lowdin orthogonalize #######
 		print "Lowdin orthogonalizing NHO..."
 		rot_low = lowdin(np.dot(np.dot(self.PNHO.take(self.PNHO_indices, axis=1).T.conj(), self.s), self.PNHO.take(self.PNHO_indices, axis=1)))
-		self.NHO = np.dot( self.PNHO.take(self.PNHO_indices, axis=1), rot_low)
+		self.NHOs = np.dot( self.PNHO.take(self.PNHO_indices, axis=1), rot_low)
 
 		print "Finding unocuppied basis functions..."
 		##### Gram-Schmidt orthogonalize #####
 		rot = np.identity(self.dim, dtype ='complex')
-		rot[:,:len(self.PNHO_indices)] = self.NHO[:,:]
+		rot[:,:len(self.PNHO_indices)] = self.NHOs[:,:]
 		for n in range(len(self.PNHO_indices),self.dim):
-			#print "n", n
+#			print "n", n
 			v = rot[:,n]
 			norm = np.dot(np.dot(v.T.conj(), self.s), v)
 			v/= np.sqrt(norm)
@@ -332,8 +333,20 @@ class NO:
 				norm = np.dot(np.dot(v.T.conj(), self.s), v)
 				v/= np.sqrt(norm)
 			rot[:,n] = v
+		norms_n = np.dot(np.dot(rot.T.conj(), self.s), rot).diagonal()
+		rot /= np.sqrt(norms_n)
 		self.NHOs = rot
+		print "Found natural hybrid orbitals. "
 		return self.NHOs
+
+	def get_NHO_hamiltonian_and_overlap(self):
+		if type(self.NAOs)==type(False):
+			self.get_NAO()
+		if type(self.NHOs)==type(False):
+			self.get_natural_hybrids()
+		H = np.dot(self.NHOs.T.conj(), np.dot(self.h,self.NHOs))
+		S = np.dot(self.NHOs.T.conj(), np.dot(self.s,self.NHOs)).real
+		return H,S
 
 def plot_basis(r, atoms, ns, basis = 'dzp', folder_name='./basis', vacuum=3.0, h = 0.20):
     """
