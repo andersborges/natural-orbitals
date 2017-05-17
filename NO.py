@@ -31,6 +31,7 @@ class NO:
 		self.mol = mol
 		self.NAOs = False
 		self.NHOs = False
+		self.model = model
 		if model==True:
 			from ase import Atoms
 			self.model = Atoms() ###### object for visualization of effective hamiltonian
@@ -235,16 +236,16 @@ class NO:
 		print "Bound states/one-pairs (atom, number of bound states): ", self.d
 		self.NAOs = NAOs[:,:]
 		self.s_NAO = np.dot(self.NAOs.T.conj(), np.dot(self.s, self.NAOs))
+		self.h_NAO = np.dot(self.NAOs.T.conj(), np.dot(self.h, self.NAOs))
 		self.P_NAO = np.dot(self.NAOs.T.conj(), np.dot(self.P, self.NAOs))
 
 		print "Electrons in occupied NAOs", np.trace(self.P_NAO.take(self.NMB_indices, axis=0).take(self.NMB_indices,axis=1)).real
 		print "Total electrons", self.ne*2
 		print "Percentage of electrons represented by NMB:",np.trace(self.P_NAO.take(self.NMB_indices, axis=0).take(self.NMB_indices,axis=1)).real/(2*self.ne)*100
-
 		return self.NAOs
 
 	def get_natural_charges(self):
-		if self.NAOs==False:
+		if type(self.NAOs)==type(False):
 			self.get_NAO()
 		self.charges = np.zeros(len(self.mol))
 		for n, atom in enumerate(self.mol):
@@ -252,6 +253,20 @@ class NO:
 			self.charges[n] = np.diagonal(self.P_NAO.real).take(bfs,axis=0).sum()
 		return self.charges
 
+	def get_NAO_occupation(self, NAO_indices):
+		if type(self.NAOs)==type(False):
+			self.get_NAO()
+		return np.trace(self.P_NAO.take(NAO_indices, axis=0).take(NAO_indices,axis=1)).real
+
+	def get_single_occupancy_NAO_indices(self, threshold=0.01):
+		if type(self.NAOs)==type(False):
+			self.get_NAO()
+		occ = np.abs(np.diagonal(self.P_NAO)-np.ones(self.dim))
+		indices = []
+		for n, o in enumerate(occ):
+			if o<threshold:
+				indices.append(n)
+		return indices
 
 	def get_natural_hybrids(self, threshold=1.90):
 		"""Implementation after Foster, J. P.; Weinhold, F. J. Am. Chem. Soc. 1980, 102 (22), 7211. """
@@ -347,6 +362,44 @@ class NO:
 		H = np.dot(self.NHOs.T.conj(), np.dot(self.h,self.NHOs))
 		S = np.dot(self.NHOs.T.conj(), np.dot(self.s,self.NHOs)).real
 		return H,S
+
+	def get_NAO_retarded_Greens_function(self, energies):
+		if type(self.NAOs)==type(False):
+			self.get_NAO()
+		G_NAO = np.zeros( (  self.dim, self.dim, len(energies) ), dtype = 'complex')
+		for e, energy in enumerate(energies):
+			G_NAO[:, :,e] = np.linalg.inv(self.s_NAO*energy - self.h_NAO)
+		self.G_NAO = G_NAO
+		return self.G_NAO
+
+	def get_effective_Hamiltonian(self, indices, energies,h2=None, s2=None):
+		""" 
+		Function to calculate energy-dependent effective Hamiltonian. 
+		The Green's function of the effective Hamiltonian reproduces the
+		corresponding Green's function elements of the full Hamiltonian. 
+		"""
+		if h2==None:
+			if type(self.NAOs)==type(False):
+				self.get_NAO()
+			h2 = self.h_NAO
+			s2 = self.s_NAO			
+		print "Getting effective Hamiltonian"
+		h = h2.take(indices, axis=0).take(indices, axis=1)
+		others = list(set(range(h2.shape[0])) - set(indices))
+		s_other = s2.take(others,axis=0).take(others, axis=1) #must be complex
+		h_other = h2.take(others, axis=0).take(others, axis=1)
+		g_other = np.zeros((h_other.shape[0], h_other.shape[0], len(energies)), dtype = 'complex')
+		h_tc = h2.take(others, axis=0).take(indices,axis=1)
+		for n, e in enumerate(energies):
+			g_other[:,:,n]= np.linalg.inv(e*s_other-h_other)
+		S_other = np.zeros((len(indices),len(indices),len(energies)), dtype = 'complex')
+		H_eff = np.zeros((len(indices),len(indices),len(energies)), dtype = 'complex')
+		for n, e in enumerate(energies):
+			S_other[:,:,n] = np.dot(h_tc.T.conj(), np.dot(g_other[:,:,n], h_tc))
+			H_eff[:,:,n] =  h + S_other[:,:,n]
+		return H_eff, S_other
+
+
 
 def plot_basis(r, atoms, ns, basis = 'dzp', folder_name='./basis', vacuum=3.0, h = 0.20):
     """
