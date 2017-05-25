@@ -1,6 +1,7 @@
 import numpy as np
 import pickle
-from NO import NO, plot_basis
+from NO import NaturalOrbitals as NO
+from NO import plot_basis
 
 
 #### import Hamiltonian/overlap matrix #####

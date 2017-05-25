@@ -7,13 +7,17 @@ def lowdin(s_mm):
 	rot_mm = np.dot(rot_mm / np.sqrt(eig), rot_mm.T.conj()) #rotation matrix S^-1/2. 
 	return rot_mm
 
-class NO:
+def FermiDirac(E,T):
+	kb=8.6173324*10**(-5) #eV/K
+	return 1/(1+np.exp((E)/(kb*T)))
+
+class NaturalOrbitals:
 	"""Natural Orbitals class.
 
 	A post-processing tool to find different types of natural orbitals.
 	The implementation is after Reed, A.; Weinstock, R.; Weinhold, F. J. Chem. Phys. 1985, 83 (1985), 735. """
 
-	def __init__(self, h, s,ne, mol, basis_dic, model =False):
+	def __init__(self, h=None, s=None,D=None, ne=None, mol=None, basis_dic=None, model =False, core_and_valence=False):
 		"""Required arguments: 
 			'h':		Hamiltonian/Kohn-Sham operator in atom-centered basis.
 			's':		Overlap matrix in atom-centered basis. 
@@ -22,7 +26,9 @@ class NO:
 			'basis_dic':Dictionary which links atom index to list of basis function indices. Basis function 
 			indices associated with each atom must be consequtive.  
 			'model':	Boolean. If True, an Atoms object will be saved. The ordering of the atoms in this object will have the same ordering as the natural hybrids
-			 obtained from get_natural_hybrids(). """
+			 obtained from get_natural_hybrids().
+			'core_and_valence': If only valence electrons in calculation: set this to True.  """
+		
 		self.h = h
 		self.s = s
 		self.basis_dic= basis_dic
@@ -32,9 +38,12 @@ class NO:
 		self.NAOs = False
 		self.NHOs = False
 		self.model = model
+		self.core_and_valence =core_and_valence
 		if model==True:
 			from ase import Atoms
 			self.model = Atoms() ###### object for visualization of effective hamiltonian
+		self.transmission_uptodate= False 
+		self.currents_uptodate = False
 
 
 	def get_NAO(self, threshold = 1.90):
@@ -68,11 +77,14 @@ class NO:
 		eig /= np.sqrt(norms_n)
 		C = np.dot(rot_lowdin, eig)
 		print "Number of electron pairs:", self.ne
-		#E_f = 0.5*(eig_v[self.ne-1]+eig_v[self.ne])
+		self.HOMO = eig_v[self.ne-1]
+		self.LUMO = eig_v[self.ne]
+		self.E_F = 0.5*(eig_v[self.ne-1]+eig_v[self.ne])
 		Lambda = np.zeros((self.dim, self.dim), dtype = 'complex')
 		for n in range(self.ne):
 			Lambda[n,n] = 2.0
 		D = np.dot(C, np.dot(Lambda, C.T.conj()))
+		self.D = D
 		# P = SDS
 		self.P = np.dot(self.s, np.dot(D, self.s))
 
@@ -94,9 +106,20 @@ class NO:
 			if atom.symbol in ['H']:
 				self.NMB_indices.append(bfs[0])
 				self.NRB_indices+=bfs[1:]
-			if atom.symbol in ['S','N', 'C','O','P', 'Si', 'Ge']:	
-				self.NMB_indices+= bfs[:4]
-				self.NRB_indices+=bfs[4:]
+			if atom.symbol in ['N', 'C','O']:	
+				if self.core_and_valence==True:
+					self.NMB_indices+= bfs[:5]
+					self.NRB_indices+=bfs[5:]
+				else:
+					self.NMB_indices+= bfs[:4]
+					self.NRB_indices+=bfs[4:]
+			if atom.symbol in ['S', 'Si', 'P']:	
+				if self.core_and_valence==True:
+					self.NMB_indices+= bfs[:9]
+					self.NRB_indices+=bfs[9:]
+				else:
+					self.NMB_indices+= bfs[:4]
+					self.NRB_indices+=bfs[4:]
 			p_sub = self.P.take(bfs,axis=0).take(bfs, axis=1)
 			s_sub = self.s.take(bfs,axis=0).take(bfs, axis=1)	
 			## lowdin orthogonalize
@@ -130,6 +153,7 @@ class NO:
 		for n, bf in enumerate(bfs):
 			NAOs[:,bf] = np.dot(O_w[:,n],test.T.conj())	
 
+
 		#### Gram-Schmidt orthogonalize unoccupied (NRB) onto occupied (NMB) ###
 		print "Natural minimal basis (NMB):", self.NMB_indices
 		print "Natural Rydberg basis (NRB)", self.NRB_indices
@@ -145,7 +169,6 @@ class NO:
 
 		norms_n = np.dot(np.dot(NAOs.T.conj(), self.s), NAOs).diagonal()
 		NAOs /= np.sqrt(norms_n) # ensure normalization
-
 
 		####### Restoration of natural character of the NRB ####
 		P_restore = np.dot(NAOs.T.conj(), np.dot(self.P, NAOs))
@@ -182,7 +205,6 @@ class NO:
 		norms_n = np.dot(np.dot(NAOs.T.conj(), self.s), NAOs).diagonal()
 		NAOs /= np.sqrt(norms_n) # ensure normalization
 
-
 		####### occupancy weighted orthogonalization of NRB ######
 		if len(self.NRB_indices)>0:
 			self.s_PNAO =  np.dot(NAOs.T.conj(), np.dot(self.s, NAOs))
@@ -200,8 +222,6 @@ class NO:
 				NAOs[:,bf] = np.dot(O_w[:,n],test.T.conj())	
 		norms_n = np.dot(np.dot(NAOs.T.conj(), self.s), NAOs).diagonal()
 		NAOs /= np.sqrt(norms_n) # ensure normalization
-
-
 
 		####### Formation of final NAOs ########
 
@@ -223,6 +243,7 @@ class NO:
 			norms_n = np.dot(np.dot(NAOs.T.conj(), self.s), NAOs).diagonal()
 			NAOs /= np.sqrt(norms_n) # ensure normalization
 		#	# check for bound states
+			#print atom.symbol, w_A.real
 			for k, n_i in enumerate(w_A.real):
 				if n_i<threshold:
 					break
@@ -239,8 +260,14 @@ class NO:
 		self.h_NAO = np.dot(self.NAOs.T.conj(), np.dot(self.h, self.NAOs))
 		self.P_NAO = np.dot(self.NAOs.T.conj(), np.dot(self.P, self.NAOs))
 
+		c = NAOs.take(self.NMB_indices+self.NRB_indices, axis=1)
+		test = np.dot(c.T.conj(),np.dot(self.h, c))
+		from matplotlib import pylab as plt
+
+
 		print "Electrons in occupied NAOs", np.trace(self.P_NAO.take(self.NMB_indices, axis=0).take(self.NMB_indices,axis=1)).real
-		print "Total electrons", self.ne*2
+		print "Total electrons input:", self.ne*2
+		print "Total electrons calculated:", np.diagonal(self.P_NAO).sum().real
 		print "Percentage of electrons represented by NMB:",np.trace(self.P_NAO.take(self.NMB_indices, axis=0).take(self.NMB_indices,axis=1)).real/(2*self.ne)*100
 		return self.NAOs
 
@@ -351,6 +378,8 @@ class NO:
 		norms_n = np.dot(np.dot(rot.T.conj(), self.s), rot).diagonal()
 		rot /= np.sqrt(norms_n)
 		self.NHOs = rot
+		self.h_NHO = np.dot(rot.T.conj(), np.dot(self.h, rot))
+		self.s_NHO = np.dot(rot.T.conj(), np.dot(self.s, rot))
 		print "Found natural hybrid orbitals. "
 		return self.NHOs
 
@@ -368,9 +397,58 @@ class NO:
 			self.get_NAO()
 		G_NAO = np.zeros( (  self.dim, self.dim, len(energies) ), dtype = 'complex')
 		for e, energy in enumerate(energies):
+#			print e, energy
 			G_NAO[:, :,e] = np.linalg.inv(self.s_NAO*energy - self.h_NAO)
 		self.G_NAO = G_NAO
 		return self.G_NAO
+
+	def get_transmission(self, energies, SigmaL, SigmaR,h2=None, s2=None):
+		if h2==None:
+			if type(self.NAOs)==type(False):
+				self.get_NAO()
+			h2 = self.h_NAO
+			s2 = self.s_NAO			
+		self.energies=energies
+		G_NAO = np.zeros( (  self.dim, self.dim, len(energies) ), dtype = 'complex')
+		t = np.zeros(len(energies))
+		GammaL = -2*SigmaL.imag
+		GammaR = -2*SigmaR.imag
+		print "Calculating transmission..."
+		for e, energy in enumerate(energies):
+			print e, energy
+			Gr = np.linalg.inv(self.s_NAO*energy - self.h_NAO-SigmaL-SigmaR)
+			t[e] = np.dot(GammaL, np.dot(Gr, np.dot(GammaR, Gr.T.conj()))).real.trace()
+		print "Calculated transmission..."
+		self.t = t
+		self.transmission_uptodate= True
+		return t
+	def get_currents(self,Vs, T):
+		"Return currents in units of 2e^2/h. "
+		from scipy.integrate import simps
+		if self.transmission_uptodate==False:
+			print "You must calculate transmission first!"
+			quit()
+		Is = np.zeros(len(Vs))
+		prefac = np.zeros(self.energies.shape)
+		for v, V in enumerate(Vs):
+		 	for e, energy in enumerate(self.energies):
+		 		prefac[e] = FermiDirac(energy-self.E_F-V/2.0, T)-FermiDirac(energy-self.E_F+V/2.0, T)
+			integrand = np.multiply(prefac, self.t) 	
+			Is[v] = simps(integrand,self.energies)        
+		self.Is = Is
+		self.Vs = Vs
+		self.currents_uptodate = True
+		return Is
+
+	def get_conductances(self):
+		if self.currents_uptodate==False:
+			print "You must calculate currents first!"
+		Gs = np.zeros(self.Vs.shape)
+		for v, V in enumerate(self.Vs):
+			Gs[v] = self.Is[v]/V
+		self.Gs = Gs
+		return Gs
+
 
 	def get_effective_Hamiltonian(self, indices, energies,h2=None, s2=None):
 		""" 
@@ -439,4 +517,95 @@ def plot_basis(r, atoms, ns, basis = 'dzp', folder_name='./basis', vacuum=3.0, h
     for n, phi in zip(ns, phi_xG.take(ns, axis=0)):
         summ+= phi
     write('%s/sum.cube'%folder_name, atoms, data=summ)
+
+
+def rwb(mini, maxi, value):
+    avg = mini+(maxi-mini)/2.0
+    #print "avg", avg
+    #print value
+    if value>=avg:
+        red = 255
+        green = int(-255.0/(maxi-avg)*(value-maxi))
+        blue = green
+    if value<avg:
+        blue =255
+        green =int(255/(avg-mini)*(value-mini))
+        red = green
+#   print red, green, blue
+    return red, green, blue
+
+def get_basis_STOnG(symbols, indices, basis):
+    nZeta = len(basis.split('-')[1].split('+')[0].split('G')[0])
+    #print basis.split('-')[1].split('+')[0].split('G')[0]
+    pol_H =3*basis.count(',')
+    pold =5*basis.count(',')
+    diff_sp =0
+    diff_s = 0
+    if basis.count('+')==1:
+        diff_sp = 4
+    if basis.count('+')==2:
+        diff_sp = 4
+        diff_s = 1
+    bfs = []
+    count =0
+    # print "nZeta", nZeta
+    # print "pol_H", pol_H
+    # print "d-polarization", pold
+    # print "diffuse sp", diff_sp
+    # print "diffuse s", diff_s
+    for n, atom in enumerate(symbols):
+        if atom in ['H']:
+            if n in indices:
+                bfs+=range(count, count+nZeta+diff_s+pol_H)
+            count+=nZeta+diff_s+pol_H
+        if atom in ['C', 'N', 'O', 'B', 'F']:
+            if n in indices:
+                bfs+= range(count, count+1+4*nZeta+pold+diff_sp)
+            count+=1+4*nZeta+pold+diff_sp
+        if atom in ['S', 'P']:
+            if n in indices:
+                bfs+= range(count, count+1+4+4*nZeta+pold+diff_sp)
+            count+=1+4+4*nZeta+pold+diff_sp
+    return bfs
+
+
+
+def jmol_effective_Hamiltonian(mol, Heff, outfile = 'H_eff', cutoff=0.5):
+	###### plot direct NHO Hamiltonian ######
+	mol.center()
+	from ase.io import write
+	maxi= np.abs(Heff).max()#H_eff.min()
+	mini = -maxi
+	dummy = mol[:]
+	Heff = Heff.real
+	dummy.translate(np.array([[5.0, 0.0, 0.0]]))
+	write('%s.xyz'%outfile, dummy)
+	symbols = mol.get_chemical_symbols()
+	scaling_factor = 8.0
+	f = open('%s.dat'%outfile, 'w')
+	f.write('#test \n')
+	f.write('wireframe off \n')# background white \n')
+	for n, orbital in enumerate(mol):
+		onsite =Heff[n, n] #, len(energies)/2]
+	#	print onsite
+		diam = 0.5#np.abs(onsite)/3.0
+		print "diam", diam
+		red, green, blue = rwb(mini, maxi, onsite)
+		f.write('draw sphere%d diameter %f {%f %f %f} color {%d %d %d }\n'%(orbital.index, diam, orbital.position[0],orbital.position[1], orbital.position[2], red , green , blue)) 
+		for m, neigh in enumerate(mol):
+			#if neigh.symbol =='Au' or neigh.symbol =='H' or neigh.index ==atom.index:	
+			#		continue
+			coupling=Heff[m,n]#, len(energies)/2 ]
+			r,g,b = rwb(mini, maxi, np.abs(coupling))
+	#		if np.abs(coupling)>2.3:
+	#			print h[m,n]
+	#		if n==6 and m==7:
+	#			print "<6 H 7 >=", coupling
+	#		if n==6 and m==0:
+	#			print "<6 H 7 >=", coupling
+
+		 	if np.abs(coupling)>cutoff:					
+					f.write('draw arrow%d_%d arrow {%f %f %f} {%f %f %f} diameter %.6f color {%f %f %f}\n'%(orbital.index,neigh.index,  orbital.position[0],orbital.position[1], orbital.position[2], neigh.position[0],neigh.position[1], neigh.position[2], np.abs(coupling)/(4*6.0), r,g,b)) 
+
+
 

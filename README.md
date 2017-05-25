@@ -11,4 +11,4 @@ The implementation of natural hybrid orbitals is based on:
 
 Foster, J. P.; Weinhold, F. J. Am. Chem. Soc. 1980, 102 (22), 7211.
 
-The input in the example is based on a GPAW calculation.  
+The input in the example is based on a GPAW calculation.
