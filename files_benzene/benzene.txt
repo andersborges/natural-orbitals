@@ -1,0 +1,1249 @@
+
+  ___ ___ ___ _ _ _  
+ |   |   |_  | | | | 
+ | | | | | . | | | | 
+ |__ |  _|___|_____|  0.11.0.13053
+ |___|_|             
+
+User:  aborges@node321.cluster
+Date:  Wed May  3 08:50:05 2017
+Arch:  x86_64
+Pid:   21310
+gpaw:  /kemi/falco/gpaw-0.11.0.13004/gpaw
+_gpaw: /kemi/falco/gpaw-0.11.0.13004/build/bin.linux-x86_64-2.7/gpaw-python
+ase:   /kemi/falco/ase-3.9.1/ase (version 3.9.1)
+numpy: /kemi/falco/anaconda-2.1.0/lib/python2.7/site-packages/numpy (version 1.9.0)
+scipy: /kemi/falco/anaconda-2.1.0/lib/python2.7/site-packages/scipy (version 0.14.0)
+units: Angstrom and eV
+cores: 8
+
+Memory estimate
+---------------
+Process memory now: 43.80 MiB
+Calculator  50.01 MiB
+    Density  23.97 MiB
+        Arrays  16.64 MiB
+        Localized functions  0.92 MiB
+        Mixer  6.40 MiB
+    Hamiltonian  23.36 MiB
+        Arrays  10.88 MiB
+        XC  0.00 MiB
+        Poisson  12.40 MiB
+        vbar  0.07 MiB
+    Wavefunctions  2.69 MiB
+        C [qnM]  0.02 MiB
+        S, T [2 x qmm]  0.18 MiB
+        P [aqMi]  0.00 MiB
+        TCI  0.00 MiB
+        BasisFunctions  2.48 MiB
+        Eigensolver  0.00 MiB
+
+Positions:
+  0 C     7.0734    7.7943    6.9391
+  1 C     6.7134    7.1071    8.1208
+  2 C     6.3257    7.8144    9.2808
+  3 C     6.2985    9.2234    9.2516
+  4 C     6.6547    9.9155    8.0754
+  5 C     7.0414    9.2032    6.9214
+  6 H     6.7355    6.0000    8.1378
+  7 H     6.0000    9.7906   10.1547
+  8 H     6.6273   11.0225    8.0564
+  9 H     7.3169    9.7535    6.0000
+ 10 H     7.3760    7.2298    6.0374
+ 11 H     6.0471    7.2665   10.2010
+
+           .--------------------------------.  
+          /|                                |  
+         / |                                |  
+        /  |                                |  
+       /   |                                |  
+      /    |                                |  
+     /     |                                |  
+    /      |                                |  
+   /       |                                |  
+  /        |                                |  
+ *         |                                |  
+ |         |                                |  
+ |         |          H                     |  
+ |         |        H C                     |  
+ |         |         C CH                   |  
+ |         |                                |  
+ |         |         HC C                   |  
+ |         |           C H                  |  
+ |         |           H                    |  
+ |         |                                |  
+ |         .--------------------------------.  
+ |        /                                /   
+ |       /                                /    
+ |      /                                /     
+ |     /                                /      
+ |    /                                /       
+ |   /                                /        
+ |  /                                /         
+ | /                                /          
+ |/                                /           
+ *--------------------------------*            
+
+Unit Cell:
+           Periodic     X           Y           Z      Points  Spacing
+  --------------------------------------------------------------------
+  1. axis:    yes   13.375959    0.000000    0.000000    76     0.1760
+  2. axis:    yes    0.000000   17.022542    0.000000    96     0.1773
+  3. axis:    yes    0.000000    0.000000   16.200973    92     0.1761
+
+C-setup:
+  name   : Carbon
+  id     : 4aa54d4b901d75f77cc0ea3eec22967b
+  Z      : 6
+  valence: 4
+  core   : 2
+  charge : 0.0
+  file   : /kemi/falco/gpaw-setups-0.9.9672/C.PBE.gz
+  cutoffs: 0.64(comp), 1.14(filt), 1.14(core), lmax=2
+  valence states:
+            energy   radius
+    2s(2.00) -13.751   0.635
+    2p(2.00)  -5.284   0.635
+    *s      13.461   0.635
+    *p      21.927   0.635
+    *d       0.000   0.635
+
+LCAO basis set for C:
+  Name: dzp
+  Basis set was loaded from file /kemi/falco/gpaw-setups-0.9.9672/C.dzp.basis.gz
+  Number of radial functions: 5
+  Number of spherical harmonics: 13
+    l=0, rc=5.5469 Bohr: 2s-sz confined orbital
+    l=1, rc=6.6719 Bohr: 2p-sz confined orbital
+    l=0, rc=3.0312 Bohr: 2s-dz split-valence wave
+    l=1, rc=3.7500 Bohr: 2p-dz split-valence wave
+    l=2, rc=6.6719 Bohr: d-type Gaussian polarization
+
+H-setup:
+  name   : Hydrogen
+  id     : d65de229564ff8ea4db303e23b6d1ecf
+  Z      : 1
+  valence: 1
+  core   : 0
+  charge : 0.0
+  file   : /kemi/falco/gpaw-setups-0.9.9672/H.PBE.gz
+  cutoffs: 0.48(comp), 0.85(filt), 0.53(core), lmax=2
+  valence states:
+            energy   radius
+    1s(1.00)  -6.494   0.476
+    *s      20.717   0.476
+    *p       0.000   0.476
+
+LCAO basis set for H:
+  Name: dzp
+  Basis set was loaded from file /kemi/falco/gpaw-setups-0.9.9672/H.dzp.basis.gz
+  Number of radial functions: 3
+  Number of spherical harmonics: 5
+    l=0, rc=6.4219 Bohr: 1s-sz confined orbital
+    l=0, rc=3.6094 Bohr: 1s-dz split-valence wave
+    l=1, rc=6.4219 Bohr: p-type Gaussian polarization
+
+Using the PBE Exchange-Correlation Functional.
+Spin-Paired Calculation
+Total Charge: 0.000000
+Fermi Temperature: 0.100000
+Wave functions: LCAO
+    Diagonalizer: Serial LAPACK
+    Atomic Correction: dense with blas
+    Datatype: float
+Eigensolver: LCAO using direct dense diagonalizer
+XC and Coulomb potentials evaluated on a 152*192*184 grid
+Interpolation: tri-quintic (5. degree polynomial)
+Poisson solver: Jacobi solver with 4 multi-grid levels
+    Coarsest grid: 19 x 24 x 23 points
+    Stencil: 6*3+1=19 point O(h^6) finite-difference Laplacian
+    Tolerance: 2.000000e-10
+    Max iterations: 1000
+Reference Energy: -6240.711875
+
+Total number of cores used: 8
+Domain Decomposition: 2 x 2 x 2
+
+Symmetries present (total): 1
+
+  ( 1  0  0)
+  ( 0  1  0)
+  ( 0  0  1)
+
+1 k-point (Gamma)
+1 k-point in the Irreducible Part of the Brillouin Zone
+
+          k-points in crystal coordinates                weights
+   0:     0.00000000    0.00000000    0.00000000          1/1
+
+Mixer Type: Mixer
+Linear Mixing Parameter: 0.05
+Mixing with 5 Old Densities
+Damping of Long Wave Oscillations: 50
+
+Convergence Criteria:
+    Total Energy Change: 0.0005 eV / electron
+    Integral of Absolute Density Change: 0.0001 electrons
+    Integral of Absolute Eigenstate Change: 4e-08 eV^2
+Number of Atoms: 12
+Number of Atomic Orbitals: 108
+Number of Bands in Calculation: 30
+Bands to Converge: Occupied States Only
+Number of Valence Electrons: 30
+                     log10-error:    Total        Iterations:
+           Time      WFS    Density  Energy       Fermi  Poisson
+iter:   1  08:50:12                 -76.188848    0      51     
+iter:   2  08:50:15         -0.79   -75.770260    0      20     
+iter:   3  08:50:20         -0.82   -73.963095    29     40     
+iter:   4  08:50:24         -1.26   -73.894447    6      32     
+iter:   5  08:50:28         -1.37   -73.730558    2      29     
+iter:   6  08:50:31         -2.01   -73.721820    1      18     
+iter:   7  08:50:33         -2.32   -73.718812    0      10     
+iter:   8  08:50:34         -2.59   -73.718148    0      8      
+iter:   9  08:50:35         -3.22   -73.717716    0      3      
+iter:  10  08:50:37         -3.28   -73.717479    0      4      
+iter:  11  08:50:38         -3.75   -73.717968    0      3      
+iter:  12  08:50:39         -3.88   -73.717136    0      2      
+iter:  13  08:50:40         -3.94   -73.717370    0      2      
+iter:  14  08:50:41         -3.96   -73.717736    0      3      
+iter:  15  08:50:42         -4.18   -73.717252    0      2      
+------------------------------------
+Converged After 15 Iterations.
+
+Energy Contributions Relative to Reference Atoms:(reference = -6240.711875)
+-------------------------
+Kinetic:        +47.411329
+Potential:      -56.754909
+External:        +0.000000
+XC:             -64.732905
+Entropy (-ST):   -0.000000
+Local:           +0.359233
+-------------------------
+Free Energy:    -73.717252
+Zero Kelvin:    -73.717252
+
+Fermi Level: -3.53627
+ Band  Eigenvalues  Occupancy
+    0    -20.78742    2.00000
+    1    -18.11373    2.00000
+    2    -18.07252    2.00000
+    3    -14.50413    2.00000
+    4    -14.49359    2.00000
+    5    -12.43852    2.00000
+    6    -10.92178    2.00000
+    7    -10.51534    2.00000
+    8     -9.90597    2.00000
+    9     -9.83653    2.00000
+   10     -8.59122    2.00000
+   11     -7.96818    2.00000
+   12     -7.93036    2.00000
+   13     -5.96102    2.00000
+   14     -5.92919    2.00000
+   15     -0.84817    0.00000
+   16     -0.84644    0.00000
+   17      1.64506    0.00000
+   18      2.91257    0.00000
+   19      2.92252    0.00000
+   20      3.06846    0.00000
+   21      3.83402    0.00000
+   22      3.83564    0.00000
+   23      4.40751    0.00000
+   24      7.04810    0.00000
+   25      7.10302    0.00000
+   26      7.30271    0.00000
+   27      7.31236    0.00000
+   28      8.69126    0.00000
+   29      8.76520    0.00000
+
+
+Dipole Moment: [ -3.83296160e-04  -7.11767961e-05  -1.21294695e-04]
+
+Forces in eV/Ang:
+  0 C    -0.10685    0.06618    0.33361
+  1 C     0.01663   -0.02266   -0.01675
+  2 C     0.10083    0.08201   -0.32804
+  3 C     0.02232    0.00834    0.01267
+  4 C    -0.00936   -0.06065    0.00174
+  5 C    -0.01477   -0.01141    0.01019
+  6 H     0.00636   -0.01005   -0.00381
+  7 H    -0.01094    0.00247    0.00202
+  8 H     0.00625   -0.00708    0.00651
+  9 H     0.00686   -0.00486    0.01261
+ 10 H     0.00543   -0.01947   -0.01790
+ 11 H    -0.00482   -0.01010    0.00705
+
+Positions:
+  0 C     7.0734    7.7943    6.9391
+  1 C     6.7150    7.1048    8.1191
+  2 C     6.3257    7.8144    9.2808
+  3 C     6.3007    9.2243    9.2529
+  4 C     6.6547    9.9155    8.0754
+  5 C     7.0400    9.2021    6.9224
+  6 H     6.7361    5.9990    8.1375
+  7 H     5.9989    9.7908   10.1549
+  8 H     6.6280   11.0218    8.0570
+  9 H     7.3176    9.7530    6.0013
+ 10 H     7.3765    7.2278    6.0356
+ 11 H     6.0466    7.2655   10.2017
+
+           .--------------------------------.  
+          /|                                |  
+         / |                                |  
+        /  |                                |  
+       /   |                                |  
+      /    |                                |  
+     /     |                                |  
+    /      |                                |  
+   /       |                                |  
+  /        |                                |  
+ *         |                                |  
+ |         |                                |  
+ |         |          H                     |  
+ |         |        H C                     |  
+ |         |         C CH                   |  
+ |         |                                |  
+ |         |         HC C                   |  
+ |         |           C H                  |  
+ |         |           H                    |  
+ |         |                                |  
+ |         .--------------------------------.  
+ |        /                                /   
+ |       /                                /    
+ |      /                                /     
+ |     /                                /      
+ |    /                                /       
+ |   /                                /        
+ |  /                                /         
+ | /                                /          
+ |/                                /           
+ *--------------------------------*            
+
+Unit Cell:
+           Periodic     X           Y           Z      Points  Spacing
+  --------------------------------------------------------------------
+  1. axis:    yes   13.375959    0.000000    0.000000    76     0.1760
+  2. axis:    yes    0.000000   17.022542    0.000000    96     0.1773
+  3. axis:    yes    0.000000    0.000000   16.200973    92     0.1761
+
+C-setup:
+  name   : Carbon
+  id     : 4aa54d4b901d75f77cc0ea3eec22967b
+  Z      : 6
+  valence: 4
+  core   : 2
+  charge : 0.0
+  file   : /kemi/falco/gpaw-setups-0.9.9672/C.PBE.gz
+  cutoffs: 0.64(comp), 1.14(filt), 1.14(core), lmax=2
+  valence states:
+            energy   radius
+    2s(2.00) -13.751   0.635
+    2p(2.00)  -5.284   0.635
+    *s      13.461   0.635
+    *p      21.927   0.635
+    *d       0.000   0.635
+
+LCAO basis set for C:
+  Name: dzp
+  Basis set was loaded from file /kemi/falco/gpaw-setups-0.9.9672/C.dzp.basis.gz
+  Number of radial functions: 5
+  Number of spherical harmonics: 13
+    l=0, rc=5.5469 Bohr: 2s-sz confined orbital
+    l=1, rc=6.6719 Bohr: 2p-sz confined orbital
+    l=0, rc=3.0312 Bohr: 2s-dz split-valence wave
+    l=1, rc=3.7500 Bohr: 2p-dz split-valence wave
+    l=2, rc=6.6719 Bohr: d-type Gaussian polarization
+
+H-setup:
+  name   : Hydrogen
+  id     : d65de229564ff8ea4db303e23b6d1ecf
+  Z      : 1
+  valence: 1
+  core   : 0
+  charge : 0.0
+  file   : /kemi/falco/gpaw-setups-0.9.9672/H.PBE.gz
+  cutoffs: 0.48(comp), 0.85(filt), 0.53(core), lmax=2
+  valence states:
+            energy   radius
+    1s(1.00)  -6.494   0.476
+    *s      20.717   0.476
+    *p       0.000   0.476
+
+LCAO basis set for H:
+  Name: dzp
+  Basis set was loaded from file /kemi/falco/gpaw-setups-0.9.9672/H.dzp.basis.gz
+  Number of radial functions: 3
+  Number of spherical harmonics: 5
+    l=0, rc=6.4219 Bohr: 1s-sz confined orbital
+    l=0, rc=3.6094 Bohr: 1s-dz split-valence wave
+    l=1, rc=6.4219 Bohr: p-type Gaussian polarization
+
+Using the PBE Exchange-Correlation Functional.
+Spin-Paired Calculation
+Total Charge: 0.000000
+Fermi Temperature: 0.100000
+Wave functions: LCAO
+    Diagonalizer: Serial LAPACK
+    Atomic Correction: dense with blas
+    Datatype: float
+Eigensolver: LCAO using direct dense diagonalizer
+XC and Coulomb potentials evaluated on a 152*192*184 grid
+Interpolation: tri-quintic (5. degree polynomial)
+Poisson solver: Jacobi solver with 4 multi-grid levels
+    Coarsest grid: 19 x 24 x 23 points
+    Stencil: 6*3+1=19 point O(h^6) finite-difference Laplacian
+    Tolerance: 2.000000e-10
+    Max iterations: 1000
+Reference Energy: -6240.711875
+
+Total number of cores used: 8
+Domain Decomposition: 2 x 2 x 2
+
+Symmetries present (total): 1
+
+  ( 1  0  0)
+  ( 0  1  0)
+  ( 0  0  1)
+
+1 k-point (Gamma)
+1 k-point in the Irreducible Part of the Brillouin Zone
+
+          k-points in crystal coordinates                weights
+   0:     0.00000000    0.00000000    0.00000000          1/1
+
+Mixer Type: Mixer
+Linear Mixing Parameter: 0.05
+Mixing with 5 Old Densities
+Damping of Long Wave Oscillations: 50
+
+Convergence Criteria:
+    Total Energy Change: 0.0005 eV / electron
+    Integral of Absolute Density Change: 0.0001 electrons
+    Integral of Absolute Eigenstate Change: 4e-08 eV^2
+Number of Atoms: 12
+Number of Atomic Orbitals: 108
+Number of Bands in Calculation: 30
+Bands to Converge: Occupied States Only
+Number of Valence Electrons: 30
+                     log10-error:    Total        Iterations:
+           Time      WFS    Density  Energy       Fermi  Poisson
+iter:   1  08:50:44                 -73.717462    0      11     
+iter:   2  08:50:45         -3.13   -73.717451    0      3      
+iter:   3  08:50:46         -3.20   -73.717377    0      5      
+iter:   4  08:50:47         -3.64   -73.717360    0      3      
+iter:   5  08:50:49         -3.71   -73.717411    0      3      
+iter:   6  08:50:50         -4.12   -73.717336    0      2      
+------------------------------------
+Converged After 6 Iterations.
+
+Energy Contributions Relative to Reference Atoms:(reference = -6240.711875)
+-------------------------
+Kinetic:        +47.243337
+Potential:      -56.632452
+External:        +0.000000
+XC:             -64.688613
+Entropy (-ST):   -0.000000
+Local:           +0.360392
+-------------------------
+Free Energy:    -73.717336
+Zero Kelvin:    -73.717336
+
+Fermi Level: -3.53627
+ Band  Eigenvalues  Occupancy
+    0    -20.78520    2.00000
+    1    -18.11046    2.00000
+    2    -18.07312    2.00000
+    3    -14.49972    2.00000
+    4    -14.49598    2.00000
+    5    -12.43617    2.00000
+    6    -10.92119    2.00000
+    7    -10.51471    2.00000
+    8     -9.89965    2.00000
+    9     -9.84154    2.00000
+   10     -8.58998    2.00000
+   11     -7.96025    2.00000
+   12     -7.93920    2.00000
+   13     -5.96099    2.00000
+   14     -5.92887    2.00000
+   15     -0.85299    0.00000
+   16     -0.84500    0.00000
+   17      1.64167    0.00000
+   18      2.90589    0.00000
+   19      2.92299    0.00000
+   20      3.06507    0.00000
+   21      3.82656    0.00000
+   22      3.83610    0.00000
+   23      4.40243    0.00000
+   24      7.04403    0.00000
+   25      7.10069    0.00000
+   26      7.28926    0.00000
+   27      7.31642    0.00000
+   28      8.68902    0.00000
+   29      8.76449    0.00000
+
+
+Dipole Moment: [ -5.68225895e-04   2.55949102e-04  -6.71926331e-06]
+
+Forces in eV/Ang:
+  0 C    -0.07845   -0.03988    0.25329
+  1 C    -0.03751    0.09304    0.10374
+  2 C     0.13327    0.03617   -0.36551
+  3 C    -0.00330   -0.05561   -0.01401
+  4 C    -0.00814   -0.08083    0.03603
+  5 C     0.01534    0.05242   -0.04238
+  6 H     0.01029   -0.04918   -0.00866
+  7 H    -0.00331    0.00708    0.01182
+  8 H     0.00662    0.01744   -0.00166
+  9 H    -0.00389   -0.01633    0.02592
+ 10 H    -0.01515    0.03351    0.04433
+ 11 H     0.00477    0.01025   -0.02505
+
+Positions:
+  0 C     7.0734    7.7943    6.9391
+  1 C     6.7140    7.1063    8.1202
+  2 C     6.3257    7.8144    9.2808
+  3 C     6.2992    9.2237    9.2520
+  4 C     6.6547    9.9155    8.0754
+  5 C     7.0409    9.2028    6.9217
+  6 H     6.7357    5.9997    8.1377
+  7 H     5.9996    9.7907   10.1547
+  8 H     6.6275   11.0223    8.0566
+  9 H     7.3172    9.7533    6.0004
+ 10 H     7.3761    7.2291    6.0368
+ 11 H     6.0470    7.2662   10.2012
+
+           .--------------------------------.  
+          /|                                |  
+         / |                                |  
+        /  |                                |  
+       /   |                                |  
+      /    |                                |  
+     /     |                                |  
+    /      |                                |  
+   /       |                                |  
+  /        |                                |  
+ *         |                                |  
+ |         |                                |  
+ |         |          H                     |  
+ |         |        H C                     |  
+ |         |         C CH                   |  
+ |         |                                |  
+ |         |         HC C                   |  
+ |         |           C H                  |  
+ |         |           H                    |  
+ |         |                                |  
+ |         .--------------------------------.  
+ |        /                                /   
+ |       /                                /    
+ |      /                                /     
+ |     /                                /      
+ |    /                                /       
+ |   /                                /        
+ |  /                                /         
+ | /                                /          
+ |/                                /           
+ *--------------------------------*            
+
+Unit Cell:
+           Periodic     X           Y           Z      Points  Spacing
+  --------------------------------------------------------------------
+  1. axis:    yes   13.375959    0.000000    0.000000    76     0.1760
+  2. axis:    yes    0.000000   17.022542    0.000000    96     0.1773
+  3. axis:    yes    0.000000    0.000000   16.200973    92     0.1761
+
+C-setup:
+  name   : Carbon
+  id     : 4aa54d4b901d75f77cc0ea3eec22967b
+  Z      : 6
+  valence: 4
+  core   : 2
+  charge : 0.0
+  file   : /kemi/falco/gpaw-setups-0.9.9672/C.PBE.gz
+  cutoffs: 0.64(comp), 1.14(filt), 1.14(core), lmax=2
+  valence states:
+            energy   radius
+    2s(2.00) -13.751   0.635
+    2p(2.00)  -5.284   0.635
+    *s      13.461   0.635
+    *p      21.927   0.635
+    *d       0.000   0.635
+
+LCAO basis set for C:
+  Name: dzp
+  Basis set was loaded from file /kemi/falco/gpaw-setups-0.9.9672/C.dzp.basis.gz
+  Number of radial functions: 5
+  Number of spherical harmonics: 13
+    l=0, rc=5.5469 Bohr: 2s-sz confined orbital
+    l=1, rc=6.6719 Bohr: 2p-sz confined orbital
+    l=0, rc=3.0312 Bohr: 2s-dz split-valence wave
+    l=1, rc=3.7500 Bohr: 2p-dz split-valence wave
+    l=2, rc=6.6719 Bohr: d-type Gaussian polarization
+
+H-setup:
+  name   : Hydrogen
+  id     : d65de229564ff8ea4db303e23b6d1ecf
+  Z      : 1
+  valence: 1
+  core   : 0
+  charge : 0.0
+  file   : /kemi/falco/gpaw-setups-0.9.9672/H.PBE.gz
+  cutoffs: 0.48(comp), 0.85(filt), 0.53(core), lmax=2
+  valence states:
+            energy   radius
+    1s(1.00)  -6.494   0.476
+    *s      20.717   0.476
+    *p       0.000   0.476
+
+LCAO basis set for H:
+  Name: dzp
+  Basis set was loaded from file /kemi/falco/gpaw-setups-0.9.9672/H.dzp.basis.gz
+  Number of radial functions: 3
+  Number of spherical harmonics: 5
+    l=0, rc=6.4219 Bohr: 1s-sz confined orbital
+    l=0, rc=3.6094 Bohr: 1s-dz split-valence wave
+    l=1, rc=6.4219 Bohr: p-type Gaussian polarization
+
+Using the PBE Exchange-Correlation Functional.
+Spin-Paired Calculation
+Total Charge: 0.000000
+Fermi Temperature: 0.100000
+Wave functions: LCAO
+    Diagonalizer: Serial LAPACK
+    Atomic Correction: dense with blas
+    Datatype: float
+Eigensolver: LCAO using direct dense diagonalizer
+XC and Coulomb potentials evaluated on a 152*192*184 grid
+Interpolation: tri-quintic (5. degree polynomial)
+Poisson solver: Jacobi solver with 4 multi-grid levels
+    Coarsest grid: 19 x 24 x 23 points
+    Stencil: 6*3+1=19 point O(h^6) finite-difference Laplacian
+    Tolerance: 2.000000e-10
+    Max iterations: 1000
+Reference Energy: -6240.711875
+
+Total number of cores used: 8
+Domain Decomposition: 2 x 2 x 2
+
+Symmetries present (total): 1
+
+  ( 1  0  0)
+  ( 0  1  0)
+  ( 0  0  1)
+
+1 k-point (Gamma)
+1 k-point in the Irreducible Part of the Brillouin Zone
+
+          k-points in crystal coordinates                weights
+   0:     0.00000000    0.00000000    0.00000000          1/1
+
+Mixer Type: Mixer
+Linear Mixing Parameter: 0.05
+Mixing with 5 Old Densities
+Damping of Long Wave Oscillations: 50
+
+Convergence Criteria:
+    Total Energy Change: 0.0005 eV / electron
+    Integral of Absolute Density Change: 0.0001 electrons
+    Integral of Absolute Eigenstate Change: 4e-08 eV^2
+Number of Atoms: 12
+Number of Atomic Orbitals: 108
+Number of Bands in Calculation: 30
+Bands to Converge: Occupied States Only
+Number of Valence Electrons: 30
+                     log10-error:    Total        Iterations:
+           Time      WFS    Density  Energy       Fermi  Poisson
+iter:   1  08:50:52                 -73.717620    0      10     
+iter:   2  08:50:53         -3.36   -73.717566    0      2      
+iter:   3  08:50:54         -3.42   -73.717526    0      4      
+iter:   4  08:50:55         -3.83   -73.717557    0      2      
+iter:   5  08:50:56         -3.86   -73.717508    0      3      
+iter:   6  08:50:57         -4.31   -73.717571    0      1      
+------------------------------------
+Converged After 6 Iterations.
+
+Energy Contributions Relative to Reference Atoms:(reference = -6240.711875)
+-------------------------
+Kinetic:        +47.333314
+Potential:      -56.705021
+External:        +0.000000
+XC:             -64.713343
+Entropy (-ST):   -0.000000
+Local:           +0.367479
+-------------------------
+Free Energy:    -73.717571
+Zero Kelvin:    -73.717571
+
+Fermi Level: -3.53627
+ Band  Eigenvalues  Occupancy
+    0    -20.78690    2.00000
+    1    -18.11285    2.00000
+    2    -18.07318    2.00000
+    3    -14.50262    2.00000
+    4    -14.49528    2.00000
+    5    -12.43817    2.00000
+    6    -10.92217    2.00000
+    7    -10.51545    2.00000
+    8     -9.90417    2.00000
+    9     -9.83882    2.00000
+   10     -8.59092    2.00000
+   11     -7.96590    2.00000
+   12     -7.93397    2.00000
+   13     -5.96106    2.00000
+   14     -5.92936    2.00000
+   15     -0.84906    0.00000
+   16     -0.84709    0.00000
+   17      1.64359    0.00000
+   18      2.91024    0.00000
+   19      2.92214    0.00000
+   20      3.06706    0.00000
+   21      3.83124    0.00000
+   22      3.83539    0.00000
+   23      4.40542    0.00000
+   24      7.04667    0.00000
+   25      7.10188    0.00000
+   26      7.29759    0.00000
+   27      7.31331    0.00000
+   28      8.69007    0.00000
+   29      8.76462    0.00000
+
+
+Dipole Moment: [ -4.68608592e-04  -4.99419142e-05  -2.08911049e-05]
+
+Forces in eV/Ang:
+  0 C    -0.09623    0.02800    0.30521
+  1 C    -0.00174    0.01788    0.02376
+  2 C     0.11052    0.06520   -0.34314
+  3 C     0.01397   -0.01155    0.00378
+  4 C    -0.00975   -0.06731    0.01392
+  5 C    -0.00439    0.01134   -0.00580
+  6 H     0.00786   -0.02258   -0.00617
+  7 H    -0.00803    0.00469    0.00517
+  8 H     0.00650    0.00146    0.00324
+  9 H     0.00309   -0.00803    0.01628
+ 10 H    -0.00100   -0.00117    0.00177
+ 11 H    -0.00182   -0.00340   -0.00331
+
+Positions:
+  0 C     7.0734    7.7943    6.9391
+  1 C     6.7149    7.1065    8.1215
+  2 C     6.3257    7.8144    9.2808
+  3 C     6.3022    9.2231    9.2533
+  4 C     6.6547    9.9155    8.0754
+  5 C     7.0395    9.2032    6.9218
+  6 H     6.7369    5.9967    8.1368
+  7 H     5.9981    9.7913   10.1554
+  8 H     6.6286   11.0220    8.0574
+  9 H     7.3179    9.7522    6.0029
+ 10 H     7.3764    7.2276    6.0357
+ 11 H     6.0465    7.2652   10.2014
+
+           .--------------------------------.  
+          /|                                |  
+         / |                                |  
+        /  |                                |  
+       /   |                                |  
+      /    |                                |  
+     /     |                                |  
+    /      |                                |  
+   /       |                                |  
+  /        |                                |  
+ *         |                                |  
+ |         |                                |  
+ |         |          H                     |  
+ |         |        H C                     |  
+ |         |         C CH                   |  
+ |         |                                |  
+ |         |         HC C                   |  
+ |         |           C H                  |  
+ |         |           H                    |  
+ |         |                                |  
+ |         .--------------------------------.  
+ |        /                                /   
+ |       /                                /    
+ |      /                                /     
+ |     /                                /      
+ |    /                                /       
+ |   /                                /        
+ |  /                                /         
+ | /                                /          
+ |/                                /           
+ *--------------------------------*            
+
+Unit Cell:
+           Periodic     X           Y           Z      Points  Spacing
+  --------------------------------------------------------------------
+  1. axis:    yes   13.375959    0.000000    0.000000    76     0.1760
+  2. axis:    yes    0.000000   17.022542    0.000000    96     0.1773
+  3. axis:    yes    0.000000    0.000000   16.200973    92     0.1761
+
+C-setup:
+  name   : Carbon
+  id     : 4aa54d4b901d75f77cc0ea3eec22967b
+  Z      : 6
+  valence: 4
+  core   : 2
+  charge : 0.0
+  file   : /kemi/falco/gpaw-setups-0.9.9672/C.PBE.gz
+  cutoffs: 0.64(comp), 1.14(filt), 1.14(core), lmax=2
+  valence states:
+            energy   radius
+    2s(2.00) -13.751   0.635
+    2p(2.00)  -5.284   0.635
+    *s      13.461   0.635
+    *p      21.927   0.635
+    *d       0.000   0.635
+
+LCAO basis set for C:
+  Name: dzp
+  Basis set was loaded from file /kemi/falco/gpaw-setups-0.9.9672/C.dzp.basis.gz
+  Number of radial functions: 5
+  Number of spherical harmonics: 13
+    l=0, rc=5.5469 Bohr: 2s-sz confined orbital
+    l=1, rc=6.6719 Bohr: 2p-sz confined orbital
+    l=0, rc=3.0312 Bohr: 2s-dz split-valence wave
+    l=1, rc=3.7500 Bohr: 2p-dz split-valence wave
+    l=2, rc=6.6719 Bohr: d-type Gaussian polarization
+
+H-setup:
+  name   : Hydrogen
+  id     : d65de229564ff8ea4db303e23b6d1ecf
+  Z      : 1
+  valence: 1
+  core   : 0
+  charge : 0.0
+  file   : /kemi/falco/gpaw-setups-0.9.9672/H.PBE.gz
+  cutoffs: 0.48(comp), 0.85(filt), 0.53(core), lmax=2
+  valence states:
+            energy   radius
+    1s(1.00)  -6.494   0.476
+    *s      20.717   0.476
+    *p       0.000   0.476
+
+LCAO basis set for H:
+  Name: dzp
+  Basis set was loaded from file /kemi/falco/gpaw-setups-0.9.9672/H.dzp.basis.gz
+  Number of radial functions: 3
+  Number of spherical harmonics: 5
+    l=0, rc=6.4219 Bohr: 1s-sz confined orbital
+    l=0, rc=3.6094 Bohr: 1s-dz split-valence wave
+    l=1, rc=6.4219 Bohr: p-type Gaussian polarization
+
+Using the PBE Exchange-Correlation Functional.
+Spin-Paired Calculation
+Total Charge: 0.000000
+Fermi Temperature: 0.100000
+Wave functions: LCAO
+    Diagonalizer: Serial LAPACK
+    Atomic Correction: dense with blas
+    Datatype: float
+Eigensolver: LCAO using direct dense diagonalizer
+XC and Coulomb potentials evaluated on a 152*192*184 grid
+Interpolation: tri-quintic (5. degree polynomial)
+Poisson solver: Jacobi solver with 4 multi-grid levels
+    Coarsest grid: 19 x 24 x 23 points
+    Stencil: 6*3+1=19 point O(h^6) finite-difference Laplacian
+    Tolerance: 2.000000e-10
+    Max iterations: 1000
+Reference Energy: -6240.711875
+
+Total number of cores used: 8
+Domain Decomposition: 2 x 2 x 2
+
+Symmetries present (total): 1
+
+  ( 1  0  0)
+  ( 0  1  0)
+  ( 0  0  1)
+
+1 k-point (Gamma)
+1 k-point in the Irreducible Part of the Brillouin Zone
+
+          k-points in crystal coordinates                weights
+   0:     0.00000000    0.00000000    0.00000000          1/1
+
+Mixer Type: Mixer
+Linear Mixing Parameter: 0.05
+Mixing with 5 Old Densities
+Damping of Long Wave Oscillations: 50
+
+Convergence Criteria:
+    Total Energy Change: 0.0005 eV / electron
+    Integral of Absolute Density Change: 0.0001 electrons
+    Integral of Absolute Eigenstate Change: 4e-08 eV^2
+Number of Atoms: 12
+Number of Atomic Orbitals: 108
+Number of Bands in Calculation: 30
+Bands to Converge: Occupied States Only
+Number of Valence Electrons: 30
+                     log10-error:    Total        Iterations:
+           Time      WFS    Density  Energy       Fermi  Poisson
+iter:   1  08:50:59                 -73.717412    0      11     
+iter:   2  08:51:00         -3.16   -73.717535    0      2      
+iter:   3  08:51:01         -3.21   -73.717456    0      5      
+iter:   4  08:51:02         -3.63   -73.717323    0      2      
+iter:   5  08:51:03         -3.68   -73.717492    0      3      
+iter:   6  08:51:04         -4.07   -73.717313    0      3      
+------------------------------------
+Converged After 6 Iterations.
+
+Energy Contributions Relative to Reference Atoms:(reference = -6240.711875)
+-------------------------
+Kinetic:        +47.236756
+Potential:      -56.630500
+External:        +0.000000
+XC:             -64.683446
+Entropy (-ST):   -0.000000
+Local:           +0.359877
+-------------------------
+Free Energy:    -73.717313
+Zero Kelvin:    -73.717313
+
+Fermi Level: -3.53627
+ Band  Eigenvalues  Occupancy
+    0    -20.78777    2.00000
+    1    -18.11345    2.00000
+    2    -18.07079    2.00000
+    3    -14.50184    2.00000
+    4    -14.49115    2.00000
+    5    -12.43519    2.00000
+    6    -10.91626    2.00000
+    7    -10.51614    2.00000
+    8     -9.90369    2.00000
+    9     -9.83477    2.00000
+   10     -8.59177    2.00000
+   11     -7.96376    2.00000
+   12     -7.93230    2.00000
+   13     -5.96193    2.00000
+   14     -5.92907    2.00000
+   15     -0.85058    0.00000
+   16     -0.84416    0.00000
+   17      1.63690    0.00000
+   18      2.90691    0.00000
+   19      2.91499    0.00000
+   20      3.06861    0.00000
+   21      3.82725    0.00000
+   22      3.83289    0.00000
+   23      4.39932    0.00000
+   24      7.04288    0.00000
+   25      7.10389    0.00000
+   26      7.29546    0.00000
+   27      7.31737    0.00000
+   28      8.68706    0.00000
+   29      8.76365    0.00000
+
+
+Dipole Moment: [-0.00049701  0.00010495 -0.00029611]
+
+Forces in eV/Ang:
+  0 C    -0.09417    0.00808    0.29894
+  1 C     0.00617   -0.08689   -0.04781
+  2 C     0.11801    0.03668   -0.28294
+  3 C    -0.03827    0.04478    0.00208
+  4 C    -0.00433   -0.08271    0.05497
+  5 C     0.00837   -0.05177    0.02354
+  6 H     0.00351    0.08109    0.00368
+  7 H     0.01552   -0.02227   -0.02644
+  8 H     0.00364    0.01307    0.00280
+  9 H     0.01375    0.03064   -0.04411
+ 10 H    -0.01559    0.02912    0.04789
+ 11 H     0.00425    0.01212   -0.02263
+
+Positions:
+  0 C     7.0734    7.7943    6.9391
+  1 C     6.7142    7.1063    8.1205
+  2 C     6.3257    7.8144    9.2808
+  3 C     6.3000    9.2236    9.2523
+  4 C     6.6547    9.9155    8.0754
+  5 C     7.0406    9.2029    6.9217
+  6 H     6.7360    5.9989    8.1375
+  7 H     5.9992    9.7908   10.1549
+  8 H     6.6278   11.0222    8.0568
+  9 H     7.3174    9.7530    6.0011
+ 10 H     7.3762    7.2287    6.0365
+ 11 H     6.0468    7.2659   10.2013
+
+           .--------------------------------.  
+          /|                                |  
+         / |                                |  
+        /  |                                |  
+       /   |                                |  
+      /    |                                |  
+     /     |                                |  
+    /      |                                |  
+   /       |                                |  
+  /        |                                |  
+ *         |                                |  
+ |         |                                |  
+ |         |          H                     |  
+ |         |        H C                     |  
+ |         |         C CH                   |  
+ |         |                                |  
+ |         |         HC C                   |  
+ |         |           C H                  |  
+ |         |           H                    |  
+ |         |                                |  
+ |         .--------------------------------.  
+ |        /                                /   
+ |       /                                /    
+ |      /                                /     
+ |     /                                /      
+ |    /                                /       
+ |   /                                /        
+ |  /                                /         
+ | /                                /          
+ |/                                /           
+ *--------------------------------*            
+
+Unit Cell:
+           Periodic     X           Y           Z      Points  Spacing
+  --------------------------------------------------------------------
+  1. axis:    yes   13.375959    0.000000    0.000000    76     0.1760
+  2. axis:    yes    0.000000   17.022542    0.000000    96     0.1773
+  3. axis:    yes    0.000000    0.000000   16.200973    92     0.1761
+
+C-setup:
+  name   : Carbon
+  id     : 4aa54d4b901d75f77cc0ea3eec22967b
+  Z      : 6
+  valence: 4
+  core   : 2
+  charge : 0.0
+  file   : /kemi/falco/gpaw-setups-0.9.9672/C.PBE.gz
+  cutoffs: 0.64(comp), 1.14(filt), 1.14(core), lmax=2
+  valence states:
+            energy   radius
+    2s(2.00) -13.751   0.635
+    2p(2.00)  -5.284   0.635
+    *s      13.461   0.635
+    *p      21.927   0.635
+    *d       0.000   0.635
+
+LCAO basis set for C:
+  Name: dzp
+  Basis set was loaded from file /kemi/falco/gpaw-setups-0.9.9672/C.dzp.basis.gz
+  Number of radial functions: 5
+  Number of spherical harmonics: 13
+    l=0, rc=5.5469 Bohr: 2s-sz confined orbital
+    l=1, rc=6.6719 Bohr: 2p-sz confined orbital
+    l=0, rc=3.0312 Bohr: 2s-dz split-valence wave
+    l=1, rc=3.7500 Bohr: 2p-dz split-valence wave
+    l=2, rc=6.6719 Bohr: d-type Gaussian polarization
+
+H-setup:
+  name   : Hydrogen
+  id     : d65de229564ff8ea4db303e23b6d1ecf
+  Z      : 1
+  valence: 1
+  core   : 0
+  charge : 0.0
+  file   : /kemi/falco/gpaw-setups-0.9.9672/H.PBE.gz
+  cutoffs: 0.48(comp), 0.85(filt), 0.53(core), lmax=2
+  valence states:
+            energy   radius
+    1s(1.00)  -6.494   0.476
+    *s      20.717   0.476
+    *p       0.000   0.476
+
+LCAO basis set for H:
+  Name: dzp
+  Basis set was loaded from file /kemi/falco/gpaw-setups-0.9.9672/H.dzp.basis.gz
+  Number of radial functions: 3
+  Number of spherical harmonics: 5
+    l=0, rc=6.4219 Bohr: 1s-sz confined orbital
+    l=0, rc=3.6094 Bohr: 1s-dz split-valence wave
+    l=1, rc=6.4219 Bohr: p-type Gaussian polarization
+
+Using the PBE Exchange-Correlation Functional.
+Spin-Paired Calculation
+Total Charge: 0.000000
+Fermi Temperature: 0.100000
+Wave functions: LCAO
+    Diagonalizer: Serial LAPACK
+    Atomic Correction: dense with blas
+    Datatype: float
+Eigensolver: LCAO using direct dense diagonalizer
+XC and Coulomb potentials evaluated on a 152*192*184 grid
+Interpolation: tri-quintic (5. degree polynomial)
+Poisson solver: Jacobi solver with 4 multi-grid levels
+    Coarsest grid: 19 x 24 x 23 points
+    Stencil: 6*3+1=19 point O(h^6) finite-difference Laplacian
+    Tolerance: 2.000000e-10
+    Max iterations: 1000
+Reference Energy: -6240.711875
+
+Total number of cores used: 8
+Domain Decomposition: 2 x 2 x 2
+
+Symmetries present (total): 1
+
+  ( 1  0  0)
+  ( 0  1  0)
+  ( 0  0  1)
+
+1 k-point (Gamma)
+1 k-point in the Irreducible Part of the Brillouin Zone
+
+          k-points in crystal coordinates                weights
+   0:     0.00000000    0.00000000    0.00000000          1/1
+
+Mixer Type: Mixer
+Linear Mixing Parameter: 0.05
+Mixing with 5 Old Densities
+Damping of Long Wave Oscillations: 50
+
+Convergence Criteria:
+    Total Energy Change: 0.0005 eV / electron
+    Integral of Absolute Density Change: 0.0001 electrons
+    Integral of Absolute Eigenstate Change: 4e-08 eV^2
+Number of Atoms: 12
+Number of Atomic Orbitals: 108
+Number of Bands in Calculation: 30
+Bands to Converge: Occupied States Only
+Number of Valence Electrons: 30
+                     log10-error:    Total        Iterations:
+           Time      WFS    Density  Energy       Fermi  Poisson
+iter:   1  08:51:07                 -73.717713    0      11     
+iter:   2  08:51:08         -3.24   -73.717560    0      2      
+iter:   3  08:51:09         -3.30   -73.717420    0      4      
+iter:   4  08:51:10         -3.75   -73.717571    0      2      
+iter:   5  08:51:11         -3.80   -73.717455    0      3      
+iter:   6  08:51:12         -4.21   -73.717622    0      2      
+------------------------------------
+Converged After 6 Iterations.
+
+Energy Contributions Relative to Reference Atoms:(reference = -6240.711875)
+-------------------------
+Kinetic:        +47.303467
+Potential:      -56.683668
+External:        +0.000000
+XC:             -64.705047
+Entropy (-ST):   -0.000000
+Local:           +0.367625
+-------------------------
+Free Energy:    -73.717622
+Zero Kelvin:    -73.717622
+
+Fermi Level: -3.53627
+ Band  Eigenvalues  Occupancy
+    0    -20.78758    2.00000
+    1    -18.11333    2.00000
+    2    -18.07299    2.00000
+    3    -14.50277    2.00000
+    4    -14.49447    2.00000
+    5    -12.43773    2.00000
+    6    -10.92088    2.00000
+    7    -10.51598    2.00000
+    8     -9.90444    2.00000
+    9     -9.83807    2.00000
+   10     -8.59153    2.00000
+   11     -7.96565    2.00000
+   12     -7.93385    2.00000
+   13     -5.96167    2.00000
+   14     -5.92962    2.00000
+   15     -0.84850    0.00000
+   16     -0.84793    0.00000
+   17      1.64177    0.00000
+   18      2.90949    0.00000
+   19      2.92000    0.00000
+   20      3.06714    0.00000
+   21      3.83043    0.00000
+   22      3.83434    0.00000
+   23      4.40372    0.00000
+   24      7.04565    0.00000
+   25      7.10195    0.00000
+   26      7.29741    0.00000
+   27      7.31348    0.00000
+   28      8.68910    0.00000
+   29      8.76420    0.00000
+
+
+Dipole Moment: [-0.00046223  0.00036231 -0.00022783]
+
+Forces in eV/Ang:
+  0 C    -0.09462    0.02240    0.30190
+  1 C     0.00126   -0.01441    0.00604
+  2 C     0.10976    0.05963   -0.32532
+  3 C     0.00534    0.00453    0.00667
+  4 C    -0.01052   -0.07119    0.02481
+  5 C    -0.00363   -0.00778    0.00389
+  6 H     0.00644    0.00154   -0.00260
+  7 H    -0.00161   -0.00201   -0.00169
+  8 H     0.00555    0.00431    0.00330
+  9 H     0.00483    0.00143    0.00206
+ 10 H    -0.00470    0.00676    0.01381
+ 11 H    -0.00049    0.00063   -0.00745
+Memory usage: 157.84 MiB
+===================================================================
+Timing:                                      incl.     excl.
+===================================================================
+DenseAtomicCorrection:                       0.000     0.000   0.0% |
+Distribute overlap matrix:                   0.007     0.007   0.0% |
+Force calculation:                           0.881     0.214   0.3% |
+ LCAO forces:                                0.666     0.001   0.0% |
+  Atomic Hamiltonian force:                  0.000     0.000   0.0% |
+  Initial:                                   0.001     0.000   0.0% |
+   Get density matrix:                       0.001     0.001   0.0% |
+  Paw correction:                            0.000     0.000   0.0% |
+  Potential:                                 0.450     0.450   0.7% |
+  TCI derivative:                            0.214     0.214   0.3% |
+  Wait for sum:                              0.000     0.000   0.0% |
+IO:                                          0.112     0.000   0.0% |
+ Write:                                      0.112     0.000   0.0% |
+  Atomic matrices:                           0.001     0.001   0.0% |
+  Band energies:                             0.000     0.000   0.0% |
+  Close:                                     0.013     0.013   0.0% |
+  Meta data:                                 0.017     0.017   0.0% |
+  Projections:                               0.000     0.000   0.0% |
+  Pseudo-density:                            0.034     0.034   0.1% |
+  Pseudo-potential:                          0.046     0.046   0.1% |
+  Pseudo-wavefunctions:                      0.000     0.000   0.0% |
+Initialization:                             14.931     0.705   1.0% |
+ Basic WFS set positions:                    0.002     0.001   0.0% |
+  Redistribute:                              0.000     0.000   0.0% |
+ Basis functions set positions:              0.043     0.043   0.1% |
+ LCAO WFS Initialize:                       13.927     0.018   0.0% |
+  Density initialize from wavefunctions:     0.152     0.089   0.1% |
+   Calculate density matrix:                 0.001     0.001   0.0% |
+   Construct density:                        0.062     0.062   0.1% |
+   Symmetrize density:                       0.000     0.000   0.0% |
+  Hamiltonian:                              13.757     0.002   0.0% |
+   Atomic:                                   0.396     0.210   0.3% |
+    XC Correction:                           0.186     0.186   0.3% |
+   Communicate energies:                     0.000     0.000   0.0% |
+   Hartree integrate/restrict:               0.077     0.077   0.1% |
+   Initialize Hamiltonian:                   0.002     0.002   0.0% |
+   Poisson:                                 10.358    10.358  15.4% |-----|
+   XC 3D grid:                               2.910     2.910   4.3% |-|
+   vbar:                                     0.012     0.012   0.0% |
+ Redistribute:                               0.000     0.000   0.0% |
+ TCI: Calculate S, T, P:                     0.053     0.053   0.1% |
+ TCI: Evaluate splines:                      0.200     0.200   0.3% |
+Potential matrix:                            0.019     0.019   0.0% |
+SCF-cycle:                                  51.329     0.082   0.1% |
+ Density:                                    1.386     0.001   0.0% |
+  Atomic density matrices:                   0.133     0.133   0.2% |
+  Mix:                                       0.692     0.692   1.0% |
+  Multipole moments:                         0.003     0.003   0.0% |
+  Normalize:                                 0.004     0.004   0.0% |
+  Pseudo density:                            0.554     0.011   0.0% |
+   Calculate density matrix:                 0.003     0.003   0.0% |
+   Construct density:                        0.539     0.539   0.8% |
+   Symmetrize density:                       0.000     0.000   0.0% |
+ Hamiltonian:                               48.767     0.012   0.0% |
+  Atomic:                                    2.582     1.316   2.0% ||
+   XC Correction:                            1.266     1.266   1.9% ||
+  Communicate energies:                      0.002     0.002   0.0% |
+  Hartree integrate/restrict:                0.523     0.523   0.8% |
+  Poisson:                                  25.744    25.744  38.2% |--------------|
+  XC 3D grid:                               19.826    19.826  29.4% |-----------|
+  vbar:                                      0.078     0.078   0.1% |
+ LCAO eigensolver:                           1.094     0.003   0.0% |
+  Calculate projections:                     0.000     0.000   0.0% |
+  DenseAtomicCorrection:                     0.001     0.001   0.0% |
+  Distribute overlap matrix:                 0.234     0.234   0.3% |
+  Orbital Layouts:                           0.126     0.126   0.2% |
+  Potential matrix:                          0.730     0.730   1.1% |
+Other:                                       0.070     0.070   0.1% |
+===================================================================
+Total:                                                67.350 100.0%
+===================================================================
+date: Wed May  3 08:51:12 2017
