@@ -9,11 +9,11 @@ This implementation of natural orbitals can be used to e.g.:
 
 
 # What is it?
-natural-orbitals is a Python class written to calculate different types of natural orbitals based on the output of electronic structure codes. 
+natural-orbitals is a Python class written to calculate different types of natural orbitals based on the output of electronic structure codes. It can also calculate effective Hamiltonians and calculate the electrical conductance on the basis of the Landauer formula. 
 
 # How does it work?
 
-Supply the class with input extracted from DFT or HF calculations. Input from [GPAW](https://wiki.fysik.dtu.dk/gpaw/) GPAW is demonstrated and output from Gaussian09 calculations will follow. 
+Supply the class with input extracted from DFT or HF calculations. Input from [GPAW](https://wiki.fysik.dtu.dk/gpaw/) is demonstrated and output from Gaussian09 calculations will follow. 
 
 The implementation of natural atomic orbitals (NAO) is based on: 
 
@@ -25,4 +25,3 @@ The implementation of natural hybrid orbitals is based on:
 
 Foster, J. P.; Weinhold, F. J. Am. Chem. Soc. 1980, 102 (22), 7211.
 
-The input in the example is based on a GPAW calculation.
