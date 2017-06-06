@@ -56,12 +56,14 @@ t_ortho = benz.get_transmission(energies, SigmaL, SigmaR)
 
 #### plot transmission ####
 from matplotlib import pylab as plt
-
+plt.figure(1, (2,2))
 plt.semilogy(energies, t_para, label= 'para')
 plt.semilogy(energies, t_meta, label= 'meta')
 plt.semilogy(energies, t_ortho, label= 'ortho')
 
-plt.legend()
+plt.ylim([10**(-5), 2])
+plt.xlim([-4, 4])
+plt.legend(fontsize=5, loc = 'lower left')
 plt.xlabel(r'$E-E_F$ (eV)')
 plt.ylabel(r'Transmission')
 plt.savefig('./files_benzene/transmission.png')

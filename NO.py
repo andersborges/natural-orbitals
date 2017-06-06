@@ -120,6 +120,10 @@ class NaturalOrbitals:
 				else:
 					self.NMB_indices+= bfs[:4]
 					self.NRB_indices+=bfs[4:]
+			if atom.symbol in ['Au']:	
+				self.NMB_indices+= bfs[:6]
+				self.NRB_indices+=bfs[6:]
+
 			p_sub = self.P.take(bfs,axis=0).take(bfs, axis=1)
 			s_sub = self.s.take(bfs,axis=0).take(bfs, axis=1)	
 			## lowdin orthogonalize
