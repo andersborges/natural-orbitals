@@ -2,7 +2,7 @@
 
 This implementation of natural orbitals can be used to e.g.:
 
-1. Extract parameters for H\"uckel-type/tight-binding models. 
+1. Extract parameters for Huckel-type/tight-binding models. 
 2. Calculate the electrical conductance of a molecule from a gas phase calculation. 
 
 ![alt text](pic.png)
