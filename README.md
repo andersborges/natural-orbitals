@@ -17,11 +17,11 @@ Supply the class with input extracted from DFT or HF calculations. Input from [G
 
 The implementation of natural atomic orbitals (NAO) is based on: 
 
-Reed, A.; Weinstock, R.; Weinhold, F. J. Chem. Phys. 1985, 83 (1985), 735.
+[Reed, A.; Weinstock, R.; Weinhold, F. _J. Chem. Phys._ 1985, 83 (1985), 735.](http://dx.doi.org/10.1063/1.449486)
 
 Note: Spherical symmetry is not implemented. As a result, the NAOs do not neccesarily resemble s, p or d-orbitals. 
 
 The implementation of natural hybrid orbitals is based on: 
 
-Foster, J. P.; Weinhold, F. J. Am. Chem. Soc. 1980, 102 (22), 7211.
+[Foster, J. P.; Weinhold, F. _J. Am. Chem. Soc._ 1980, 102 (22), 7211.](http://dx.doi.org/10.1021/ja00544a007)
 
