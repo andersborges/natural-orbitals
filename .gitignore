@@ -1,0 +1,14 @@
+# Project specific stuff
+basis.txt
+files_benzene/pzs/
+files_benzene/H_eff.png
+files_benzene/transmission.png
+
+# Python stuff
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
