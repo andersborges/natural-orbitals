@@ -48,7 +48,7 @@ The class can be initialized with the following parameters.
 'model':	{None, str}, optional
 			If different from None, an Atoms object will be saved. The ordering of the atoms in this object will have the same ordering as the natural hybrids
  obtained from get_natural_bonding_orbitals(). 
-'core_and_valence': {None, bool)
+'core_and_valence': {None, bool), optional
 			If input is for an all-electron calculation (like Gaussian): set this to True."""
 
 ```
