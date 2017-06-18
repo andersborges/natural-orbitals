@@ -1,7 +1,6 @@
-import pickle
+import numpy as np
 from NO import NaturalOrbitals as NO
 from NO import plot_basis
-import numpy as np
 from ase.io import read, write
 from gpaw.lcao.tools import get_bfi2
 
