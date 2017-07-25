@@ -29,8 +29,10 @@ NAO = benz.get_NAO()
 pzs = benz.get_single_occupancy_NAO_indices(threshold=0.01)
 
 # plot pz orbitals to make sure you are happy with the basis
-plot_basis(benz.NAOs, mol, pzs, basis = 'dzp', folder_name='./files_benzene/pzs') 
-
+# print np.diagonal(benz.P_NAO[:13,:13]).real
+# quit()
+# plot_basis(benz.NAOs, mol, pzs+range(13), basis = 'dzp', folder_name='./files_benzene/pzs') 
+# quit()
 ##### transport #######
 # Specify energy grid. 
 energies = np.arange(benz.E_F-4.0,benz.E_F+4.0, 0.01) # Attribute "E_F" is halfway between HOMO and LUMO
@@ -55,20 +57,22 @@ t_ortho = benz.get_transmission(energies, SigmaL, SigmaR)
 
 #### plot transmission ####
 from matplotlib import pylab as plt
-plt.figure(1, (2,2))
+plt.figure(1, (4,4))
 plt.semilogy(energies, t_para, label= 'para')
 plt.semilogy(energies, t_meta, label= 'meta')
 plt.semilogy(energies, t_ortho, label= 'ortho')
 
 plt.ylim([10**(-5), 2])
 plt.xlim([-4, 4])
-plt.legend(fontsize=5, loc = 'lower left')
+plt.legend(fontsize=8, loc = 'lower left')
 plt.xlabel(r'$E-E_F$ (eV)')
 plt.ylabel(r'Transmission')
-plt.savefig('./files_benzene/transmission.png')
+plt.savefig('./files_benzene/transmission.eps')
 plt.close()
 
 # Include effects of all other basis functions in a self energy. This renders matrix elements energy dependent. 
+
+plt.figure(1,(3,3))
 H_eff , S_other = benz.get_effective_Hamiltonian(pzs, energies) 
 
 np.set_printoptions(suppress=True, precision =2)

@@ -2,7 +2,12 @@
 basis.txt
 files_benzene/pzs/
 files_benzene/H_eff.png
-files_benzene/transmission.png
+files_benzene/transmission.*
+files_CH4/NHOs/
+files_CH4/PNHOs/
+files_CH4/model.traj
+C.sz.basis
+H.sz.basis
 
 # Python stuff
 # Byte-compiled / optimized / DLL files

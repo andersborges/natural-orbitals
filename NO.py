@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def lowdin(s_mm):
 	"""Return S^-1/2"""
 	eig, rot_mm = np.linalg.eig(s_mm) #find eigenvalues overlap matrix
@@ -18,16 +19,24 @@ class NaturalOrbitals:
 	The implementation is after Reed, A.; Weinstock, R.; Weinhold, F. J. Chem. Phys. 1985, 83 (1985), 735. """
 
 	def __init__(self, h=None, s=None,D=None, ne=None, mol=None, basis_dic=None, model =None, core_and_valence=False):
-		"""Required arguments: 
-			'h':		Hamiltonian/Kohn-Sham operator in atom-centered basis.
-			's':		Overlap matrix in atom-centered basis. 
-			'ne':		Number of electron pairs. It is assumed that the first 'ne' molecular eigenfunctions of h have occupations 2.0. 
-			'mol':		Atoms object from e.g. Atomistic Simulation Environment (ASE).  
-			'basis_dic':Dictionary which links atom index to list of basis function indices. Basis function 
-			indices associated with each atom must be consequtive.  
-			'model':	String. If different from None, an Atoms object will be saved. The ordering of the atoms in this object will have the same ordering as the natural hybrids
+		"""Arguments:  
+			'h':		(N,N) ndarray
+						Hamiltonian/Kohn-Sham operator in atom-centered basis.
+			's':		(N,N) ndarray
+						Overlap matrix in atom-centered basis. 
+			'ne':		integer int
+						Number of electron pairs. It is assumed that the first 'ne' molecular eigenfunctions of h have occupations 2.0. 
+			'mol':		
+						Atoms object from e.g. Atomistic Simulation Environment (ASE).
+			'basis_dic':	dict
+					Dictionary which links atom index to list of basis function indices. Basis function indices associated with each atom must be consequtive.  
+			'model':	
+						{None, str}, optional
+						If different from None, an Atoms object will be saved. The ordering of the atoms in this object will have the same ordering as the natural hybrids
 			 obtained from get_natural_bonding_orbitals(). 
-			'core_and_valence': If only valence electrons in calculation: set this to True.  """
+			'core_and_valence': {None, bool)
+						If input is for an all-electron calculation (like Gaussian): set this to True."""
+
 		print "####################\nInitializing NaturalOrbitals class\n####################"
 		self.h = h
 		self.s = s
@@ -316,7 +325,7 @@ class NaturalOrbitals:
 				p_sub-=self.P_NAO[bfs[l],bfs[l] ]*np.dot(self.PNHO.take(bfs,axis=0).take([l], axis=1), self.PNHO.take(bfs,axis=0).take([l], axis=1).T.conj())
 			self.P_NAO[bfs[0]:bfs[-1]+1,bfs[0]:bfs[-1]+1]= p_sub
 
-		###### make hybrids #######
+		###### make bonds and hybrids  #######
 		print "Looking for electron pairs in bonds..."
 		for n, atom in enumerate(self.mol): 
 			#loop over pairs"
@@ -344,6 +353,10 @@ class NaturalOrbitals:
 					self.PNHO[bfs1[0]:bfs1[-1]+1, bfs[self.d[n]]] =np.dot(self.NAOs[bfs1[0]:bfs1[-1]+1,bfs1[0]:bfs1[-1]+1], c_A[:len(bfs1), k]) #rotate to local basis
 					self.PNHO_indices.append(bfs1[self.d[n]])
 					self.d[n] = self.d[n]+1
+					#make NBO
+					if n>m:
+						continue
+					
 		if self.model!=False:
 			from ase.io import write
 			write('%s.traj'%self.model_name, self.model)
@@ -390,7 +403,7 @@ class NaturalOrbitals:
 		if type(self.NHOs)==type(False):
 			self.get_natural_bonding_orbitals()
 		H = np.dot(self.NHOs.T.conj(), np.dot(self.h,self.NHOs))
-		S = np.dot(self.NHOs.T.conj(), np.dot(self.s,self.NHOs)).real
+		S = np.dot(self.NHOs.T.conj(), np.dot(self.s,self.NHOs))
 		return H,S
 
 	def get_NAO_retarded_Greens_function(self, energies):
@@ -403,7 +416,20 @@ class NaturalOrbitals:
 		self.G_NAO = G_NAO
 		return self.G_NAO
 
-	def get_transmission(self, energies, SigmaL, SigmaR,h2=None, s2=None, eta=10**(-6)):
+	def get_transmission(self, energies, SigmaL, SigmaR,h2=None, s2=None, eta=10**(-6), partition=None, rotate=None):
+		"""
+		Returns tranmission or partitioned tranmission (if partition!=None). 
+		energies: list/1D-array of energies. 
+		SigmaL/R: Left and right wide-band electrodes. 
+		h2/s2: if None: Assume NAO. 
+		eta: positive infinitesimal used to construct retarded Green's function. 
+		rotate: array which defines unitary transformation. If!=None: SigmaL/SigmaR/h/s will be rotated to basis. 
+		partition: List of lists. E.g. [ [0,10], [20,40] ] 
+			If!=None: will return partitioned transmission as sum of terms 
+			GammaL_ij Gr_jk GammaR_kl Ga_li where i,j,k,l are indices in one of the lists. 
+
+
+		"""
 		if h2==None:
 			if type(self.NAOs)==type(False):
 				self.get_NAO()
@@ -411,13 +437,28 @@ class NaturalOrbitals:
 			s2 = self.s_NAO	
 		self.energies=energies
 		t = np.zeros(len(energies))
+		if partition!=None:
+			t = np.zeros( (len(partition)+1, len(energies)))			
 		GammaL = -2*SigmaL.imag.astype(np.dtype('complex'))
 		GammaR = -2*SigmaR.imag.astype(np.dtype('complex'))
+		if rotate!=None:
+			print "Rotating matrices..."
+			# SigmaL = np.dot(rotate.T.conj(), np.dot(SigmaL, rotate))
+			# SigmaR = np.dot(rotate.T.conj(), np.dot(SigmaR, rotate))
+			# GammaL = -2*SigmaL.imag.astype(np.dtype('complex'))
+			# GammaR = -2*SigmaR.imag.astype(np.dtype('complex'))
+			s2 = np.dot(rotate.T.conj(), np.dot(s2, rotate))
+			h2 = np.dot(rotate.T.conj(), np.dot(h2, rotate))
 		print "Calculating transmission..."
 		for e, energy in enumerate(energies):
-#			print e, energy
+			print e, energy
 			Gr = np.linalg.inv(-SigmaL-SigmaR + s2*(energy+eta) - h2)
-			t[e] = np.dot(GammaL, np.dot(Gr, np.dot(GammaR, Gr.T.conj()))).real.trace()
+			if partition==None:
+				t[e] = np.dot(GammaL, np.dot(Gr, np.dot(GammaR, Gr.T.conj()))).real.trace()
+			else:
+#				print partition
+				for n,l in enumerate(partition):
+					t[n,e] = np.dot(GammaL.take(l, axis=0).take(l,axis=1), np.dot(Gr.take(l, axis=0).take(l,axis=1), np.dot(GammaR.take(l, axis=0).take(l,axis=1), Gr.take(l, axis=0).take(l,axis=1).T.conj()))).real.trace()
 		print "Calculated transmission."
 		self.t = t
 		self.transmission_uptodate= True
@@ -544,7 +585,7 @@ def get_basis_STOnG(symbols, indices, basis):
     diff_s = 0
     if basis.count('+')==1:
         diff_sp = 4
-    print basis
+#    print basis
     if basis.count('+')==2:
         diff_sp = 4
         diff_s = 1
@@ -572,15 +613,16 @@ def get_basis_STOnG(symbols, indices, basis):
 
 
 
-def jmol_effective_Hamiltonian(mol, Heff, outfile = 'H_eff', cutoff=0.5):
+def jmol_effective_Hamiltonian(mol, Heff, outfile = 'H_eff', cutoff=0.5, E_F=0.0):
 	###### plot direct NHO Hamiltonian ######
 	mol.center()
 	from ase.io import write
+	Heff-=np.identity(Heff.shape[0])*E_F
 	maxi= np.abs(Heff).max()#H_eff.min()
 	mini = -maxi
 	dummy = mol[:]
 	Heff = Heff.real
-	dummy.translate(np.array([[5.0, 0.0, 0.0]]))
+#	dummy.translate(np.array([[0.0, 0.0, 10.0]]))
 	write('%s.xyz'%outfile, dummy)
 	symbols = mol.get_chemical_symbols()
 	scaling_factor = 8.0
@@ -590,7 +632,7 @@ def jmol_effective_Hamiltonian(mol, Heff, outfile = 'H_eff', cutoff=0.5):
 	for n, orbital in enumerate(mol):
 		onsite =Heff[n, n] #, len(energies)/2]
 	#	print onsite
-		diam = 0.5#np.abs(onsite)/3.0
+		diam = 0.2#np.abs(onsite)/3.0
 		print "diam", diam
 		red, green, blue = rwb(mini, maxi, onsite)
 		f.write('draw sphere%d diameter %f {%f %f %f} color {%d %d %d }\n'%(orbital.index, diam, orbital.position[0],orbital.position[1], orbital.position[2], red , green , blue)) 
@@ -598,7 +640,7 @@ def jmol_effective_Hamiltonian(mol, Heff, outfile = 'H_eff', cutoff=0.5):
 			#if neigh.symbol =='Au' or neigh.symbol =='H' or neigh.index ==atom.index:	
 			#		continue
 			coupling=Heff[m,n]#, len(energies)/2 ]
-			r,g,b = rwb(mini, maxi, np.abs(coupling))
+			r,g,b = rwb(mini, maxi, -np.abs(coupling))
 	#		if np.abs(coupling)>2.3:
 	#			print h[m,n]
 	#		if n==6 and m==7:
