@@ -34,23 +34,27 @@ Below I go through some of the features of the class.
 The class can be initialized with the following parameters. 
 
 ```python 
-"""Arguments:  
-'h':		(N,N) ndarray
-			Hamiltonian/Kohn-Sham operator in atom-centered basis.
-'s':		(N,N) ndarray
-			Overlap matrix in atom-centered basis. 
-'ne':		integer int
-			Number of electron pairs. It is assumed that the first 'ne' molecular eigenfunctions of h have occupations 2.0. 
-'mol':		
-			Atoms object from e.g. Atomistic Simulation Environment (ASE).
-'basis_dic':	dict
-		Dictionary which links atom index to list of basis function indices. Basis function indices associated with each atom must be consequtive.  
-'model':	{None, str}, optional
-			If different from None, an Atoms object will be saved. The ordering of the atoms in this object will have the same ordering as the natural hybrids
- obtained from get_natural_bonding_orbitals(). 
-'core_and_valence': {None, bool), optional
-			If input is for an all-electron calculation (like Gaussian): set this to True."""
-
+		"""Arguments:  
+			'h':		(N,N) ndarray
+						Hamiltonian/Kohn-Sham operator in atom-centered basis.
+			's':		(N,N) ndarray
+						Overlap matrix in atom-centered basis. 
+			'ne':		integer int
+						Number of electron pairs. It is assumed that the first 'ne' molecular eigenfunctions of h have occupations 2.0. 
+			'mol':		
+						Atoms object from e.g. Atomistic Simulation Environment (ASE).
+			'basis_dic':	dict
+					Dictionary which links atom index to list of basis function indices. Basis function indices associated with each atom must be consequtive.  
+			'NHO_model':	
+						{False, Boolean}, optional
+						If True, an Atoms object (from ASE) will be saved. The ordering of the 'atoms' in this object will have the same ordering as the natural hybrids
+			 obtained from get_natural_bonding_orbitals(). 
+			'NBO_model':	
+						{False, Boolean}, optional
+						If True, an Atoms object (from ASE) will be saved. The ordering of the 'atoms' in this object will have the same ordering as the natural bonding orbitals
+			 obtained from get_natural_bonding_orbitals(). 
+			'core_and_valence': {None, bool)
+						If input is for an all-electron calculation (like Gaussian): set this to True."""
 ```
 
 ## Obtaining input
@@ -92,19 +96,50 @@ By calling .get_NAO() you can get:
 By calling .get_natural_bonding_orbitals() you can get:
 * pre-natural hybrid orbitals (.PNHO)
 * natural hybrid orbitals (.NHOs)
+* natural bonding orbitals (.NBOs)
 
-You can use the function plot_basis() to plot the orbitals obtained from GPAW calculations:
+If you use GPAW, you can use the function plot_basis() to plot the orbitals obtained from GPAW calculations:
 ```python
 plot_basis(NO.NAOs, mol, pzs, basis = 'dzp', folder_name='./files_benzene/pzs') 
 ```
 
 ## Obtaining matrix elements
-You can obtain the Hamiltonian and overlap matrix in your desired basis by rotating them yourself. Here is an example:
+You can rotate matrix elements yourself:
 
 ```python
-h_NHO = np.dot(NO.NHOs.T.conj(), np.dot(h, NO.NHOs))
+h_NHO = np.dot(NO.NHOs.T.conj(), np.dot(NO.h, NO.NHOs))
+```
+
+You can also find some handy matrices as attributes: 
+
+```python
+h_NHO = NO.h_NHO
+```
+
+## Calculating effective Hamiltonians
+The function .get_effective_Hamiltonian() can be used to construct energy-dependent effective Hamiltonians:
+
+```python
+get_effective_Hamiltonian(self, indices, energies,h2=None, s2=None):
+		""" 
+		Function to calculate energy-dependent effective Hamiltonian. 
+		The Green's function of the effective Hamiltonian reproduces the corresponding retarded Green's function elements of the full non-interacting Hamiltonian. 
+		"""
 ```
 
 ## Calculating transport properties
-Is implemented. Will write more later. 
+The class can be used to calculate the Landauer transmission of gas phase molecules using the method get_transmission(). This requires specifying electrode self energies. Arbitrary Hamiltonians and overlap can be specified.
 
+```python
+		"""
+		Returns tranmission or partitioned tranmission (if partition!=None). 
+		energies: list/1D-array of energies. 
+		SigmaL/R: Left and right wide-band electrodes. 
+		h2/s2: if None: Assume NAO. 
+		eta: positive infinitesimal used to construct retarded Green's function. 
+		rotate: array which defines unitary transformation. If!=None: SigmaL/SigmaR/h/s will be rotated to basis. 
+		partition: List of lists. E.g. [ [0,10], [20,40] ] 
+			If!=None: will return partitioned transmission as sum of terms 
+			GammaL_ij Gr_jk GammaR_kl Ga_li where i,j,k,l are indices in one of the lists. 
+		"""
+```
