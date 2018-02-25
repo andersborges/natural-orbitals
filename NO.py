@@ -18,7 +18,7 @@ class NaturalOrbitals:
 	A post-processing tool to find different types of natural orbitals.
 	The implementation is after Reed, A.; Weinstock, R.; Weinhold, F. J. Chem. Phys. 1985, 83 (1985), 735. """
 
-	def __init__(self, h=None, s=None,D=None, ne=None, mol=None, basis_dic=None, model =None, core_and_valence=False):
+	def __init__(self, h=None, s=None,D=None, ne=None, mol=None, basis_dic=None, NHO_model =None, NBO_model = None, core_and_valence=False):
 		"""Arguments:  
 			'h':		(N,N) ndarray
 						Hamiltonian/Kohn-Sham operator in atom-centered basis.
@@ -30,9 +30,13 @@ class NaturalOrbitals:
 						Atoms object from e.g. Atomistic Simulation Environment (ASE).
 			'basis_dic':	dict
 					Dictionary which links atom index to list of basis function indices. Basis function indices associated with each atom must be consequtive.  
-			'model':	
+			'NHO_model':	
 						{None, str}, optional
-						If different from None, an Atoms object will be saved. The ordering of the atoms in this object will have the same ordering as the natural hybrids
+						If different from None, an Atoms object will be saved. The ordering of the 'atoms' in this object will have the same ordering as the natural hybrids
+			 obtained from get_natural_bonding_orbitals(). 
+			'NBO_model':	
+						{None, str}, optional
+						If different from None, an Atoms object will be saved. The ordering of the 'atoms' in this object will have the same ordering as the natural bonding orbitals
 			 obtained from get_natural_bonding_orbitals(). 
 			'core_and_valence': {None, bool)
 						If input is for an all-electron calculation (like Gaussian): set this to True."""
@@ -46,11 +50,17 @@ class NaturalOrbitals:
 		self.mol = mol
 		self.NAOs = False
 		self.NHOs = False
-		self.model_name = model
+		self.NBOs = False
+		self.NHO_model=False
+		self.NBO_model=False
 		self.core_and_valence =core_and_valence
-		if model!=None:
+		if NHO_model==True:
 			from ase import Atoms
-			self.model = Atoms() 
+			self.NHO_model = Atoms() 
+		if NBO_model==True:
+			from ase import Atoms
+			self.NBO_model = Atoms() 
+
 		self.transmission_uptodate= False 
 		self.currents_uptodate = False
 
@@ -58,7 +68,9 @@ class NaturalOrbitals:
 	def get_NAO(self, threshold = 1.90):
 		""" 'threshold': Threshold value for occupation of lone-pair/bound state. """
 		from copy import deepcopy
-		if self.model_name!='None':
+		if type(self.NHO_model)!=type(False):
+			from ase import Atom
+		if type(self.NBO_model)!=type(False):
 			from ase import Atom
 		print "\nGetting NAOs... \n"
 		#normalize basis
@@ -108,6 +120,7 @@ class NaturalOrbitals:
 		self.PNHO_indices = []
 		self.NMB_indices = []
 		self.NRB_indices = []
+		self.NBO_indices = []
 		print "Getting PNAOs..."
 		for n, atom in enumerate(self.mol):
 		#	print "atom ", n, atom.symbol
@@ -260,13 +273,19 @@ class NaturalOrbitals:
 			for k, n_i in enumerate(w_A.real):
 				if n_i<threshold:
 					break
-				if self.model_name!=None:
-					self.model+= Atom('X', position=atom.position)
+				if self.NHO_name!=None:
+					self.NHO_model+= Atom('X', position=atom.position)
+				if self.NBO_name!=None:
+					self.NBO_model+= Atom('X', position=atom.position)
 		#		print "found bound state", n_i
 				self.PNHO[:, bfs[k]] = NAOs[:, bfs[k]]
+				self.NBO[:, bfs[k]] = NAOs[:, bfs[k]]
 				d[n] = d[n]+1
 				self.PNHO_indices.append(bfs[k])
+				self.NBO_indices.append(bfs[k])
+
 		self.d = d
+		self.bonds = dict(d)
 		print "Bound states/lone-pairs (atom, number of bound states): ", self.d
 		self.NAOs = NAOs[:,:]
 		self.s_NAO = np.dot(self.NAOs.T.conj(), np.dot(self.s, self.NAOs))
@@ -307,14 +326,19 @@ class NaturalOrbitals:
 
 	def get_natural_bonding_orbitals(self, threshold=1.90):
 		"""Implementation after Foster, J. P.; Weinhold, F. J. Am. Chem. Soc. 1980, 102 (22), 7211. """
-		if self.model_name!=None:
+		if type(self.NHO_model)!=None:
+			from ase import Atom
+		if type(self.NBO_model)!=None:
 			from ase import Atom
 		if type(self.NAOs)==type(False):
 			self.get_NAO()
 		if type(self.NHOs)!=type(False):
 			return self.NHOs
+		if type(self.NBOs)!=type(False):
+			return self.NBOs
+		self.NBOs = np.identity(self.dim, dtype ='complex')
+		self.bond_indices=[]
 		###### deplete lone-pairs and bound states #####
-
 		for n, atom in enumerate(self.mol): 
 			bfs = self.basis_dic[n]
 			p_sub = self.P_NAO.take(bfs,axis=0).take(bfs, axis=1)
@@ -333,49 +357,61 @@ class NaturalOrbitals:
 				if n==m:
 		#			print n, m, "break"
 					continue
-		#		print n, atom.symbol, m, neigh.symbol
+#				print n, atom.symbol, m, neigh.symbol
 				# find eigenvectors with high occuptions
 				bfs1 = self.basis_dic[n]
 				bfs2 = self.basis_dic[m]
 				bfs = bfs1+bfs2
+#				print bfs
 				p_sub = self.P_NAO.take(bfs,axis=0).take(bfs, axis=1)
 				n_A, c_A = np.linalg.eig(p_sub)
 				sort_list = n_A.real.argsort()[::-1]
 				n_A = n_A[sort_list]
 				c_A = c_A.take(sort_list, axis=1)
+#				print n_A
 				for k, n_i in enumerate(n_A):
-		#			print "Trying index", k,"bfs:",  bfs[k], "occ.:", n_i
+#					print "Trying index", k,"bfs:",  bfs[k], "occ.:", n_i
 					if n_i<threshold:
 						break
-		#			print "found hybrid", n, atom.symbol, m, neigh.symbol
-					if self.model!=False:
-						self.model+= Atom('X',atom.position+0.25*(neigh.position-atom.position))
-					self.PNHO[bfs1[0]:bfs1[-1]+1, bfs[self.d[n]]] =np.dot(self.NAOs[bfs1[0]:bfs1[-1]+1,bfs1[0]:bfs1[-1]+1], c_A[:len(bfs1), k]) #rotate to local basis
+					print "found bond", n, atom.symbol, m, neigh.symbol
+					if type(self.NHO_model)!=type(False):
+						self.NHO_model+= Atom('X',atom.position+0.25*(neigh.position-atom.position))
+					if type(self.NBO_model)!=type(False):
+						self.NBO_model+= Atom('X',atom.position+0.5*(neigh.position-atom.position))
+					#first half of bond
+					bond1 = np.dot(self.NAOs[bfs1[0]:bfs1[-1]+1,bfs1[0]:bfs1[-1]+1], c_A[:len(bfs1), k]) #rotate to local basis
+					self.PNHO[bfs1[0]:bfs1[-1]+1, bfs[self.d[n]]] = bond1
 					self.PNHO_indices.append(bfs1[self.d[n]])
 					self.d[n] = self.d[n]+1
 					#make NBO
 					if n>m:
 						continue
-					
-		if self.model!=False:
+					#full bond in local basis
+					bond2 = np.dot(c_A[:, k], self.NAOs.take(bfs, axis=1).T.conj()) #rotate to local basis
+					self.NBOs[:,bfs[self.bonds[n]]] = bond2
+					self.bond_indices.append(bfs1[0]+self.bonds[n])
+					self.bonds[n]+= 1					
+		if type(self.NHO_model)!=type(False):
 			from ase.io import write
-			write('%s.traj'%self.model_name, self.model)
-
+			write('NHOs.traj', self.NHO_model)
+		if type(self.NBO_model)!=type(False):
+			from ase.io import write
+			write('NBOs.traj', self.NBO_model)
 		norms_n = np.dot(np.dot(self.PNHO.T.conj(), self.s), self.PNHO).diagonal()
 		self.PNHO /= np.sqrt(norms_n)
+	
+		norms_m = np.dot(np.dot(self.NBOs.T.conj(), self.s), self.NBOs).diagonal()
+		self.NBOs /= np.sqrt(norms_m)
+		self.NBOs = self.NBOs.take(self.bond_indices, axis=1)
 		print "Bound states and electron pairs in bonds: (atom, number of bound states) ", self.d
 
-		#plot_basis( PNHO,mol, PNHO_indices , folder_name='PNHO', vacuum=3.0)
-		#print PNHO_indices
-		#quit()
-
-		##### Lowdin orthogonalize #######
+		##### Lowdin orthogonalize NHOs#######
 		print "Lowdin orthogonalizing NHO..."
 		rot_low = lowdin(np.dot(np.dot(self.PNHO.take(self.PNHO_indices, axis=1).T.conj(), self.s), self.PNHO.take(self.PNHO_indices, axis=1)))
 		self.NHOs = np.dot( self.PNHO.take(self.PNHO_indices, axis=1), rot_low)
 
 		print "Finding unocuppied basis functions..."
-		##### Gram-Schmidt orthogonalize #####
+		##### Gram-Schmidt orthogonalize unoccupied space onto NHOs #####
 		rot = np.identity(self.dim, dtype ='complex')
 		rot[:,:len(self.PNHO_indices)] = self.NHOs[:,:]
 		for n in range(len(self.PNHO_indices),self.dim):
@@ -395,7 +431,27 @@ class NaturalOrbitals:
 		self.h_NHO = np.dot(rot.T.conj(), np.dot(self.h, rot))
 		self.s_NHO = np.dot(rot.T.conj(), np.dot(self.s, rot))
 		print "Found natural hybrid orbitals. "
-		return self.NHOs
+		##### Gram-Schmidt orthogonalize unoccupied space onto NBOs #####
+		rot = np.identity(self.dim, dtype ='complex')
+		rot[:,:len(self.bond_indices)] = self.NBOs[:,:]
+		for n in range(len(self.bond_indices),self.dim):
+#			print "n", n
+			v = rot[:,n]
+			norm = np.dot(np.dot(v.T.conj(), self.s), v)
+			v/= np.sqrt(norm)
+			for m in range(n):# subtract projection onto orthogonalized vectors
+				proj = np.dot(v.T.conj(), np.dot(self.s, rot[:,m]))
+				v=v-proj*rot[:,m]
+				norm = np.dot(np.dot(v.T.conj(), self.s), v)
+				v/= np.sqrt(norm)
+			rot[:,n] = v
+		norms_n = np.dot(np.dot(rot.T.conj(), self.s), rot).diagonal()
+		rot /= np.sqrt(norms_n)
+		self.NBOs = rot
+		self.h_NBO = np.dot(rot.T.conj(), np.dot(self.h, rot))
+		self.s_NBO = np.dot(rot.T.conj(), np.dot(self.s, rot))
+		print "Found natural bonding orbitals. "
+		return self.NHOs, self.NBOs
 
 	def get_NHO_hamiltonian_and_overlap(self):
 		if type(self.NAOs)==type(False):
@@ -451,7 +507,7 @@ class NaturalOrbitals:
 			h2 = np.dot(rotate.T.conj(), np.dot(h2, rotate))
 		print "Calculating transmission..."
 		for e, energy in enumerate(energies):
-			print e, energy
+#			print e, energy
 			Gr = np.linalg.inv(-SigmaL-SigmaR + s2*(energy+eta) - h2)
 			if partition==None:
 				t[e] = np.dot(GammaL, np.dot(Gr, np.dot(GammaR, Gr.T.conj()))).real.trace()
