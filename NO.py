@@ -31,12 +31,12 @@ class NaturalOrbitals:
 			'basis_dic':	dict
 					Dictionary which links atom index to list of basis function indices. Basis function indices associated with each atom must be consequtive.  
 			'NHO_model':	
-						{None, str}, optional
-						If different from None, an Atoms object will be saved. The ordering of the 'atoms' in this object will have the same ordering as the natural hybrids
+						{False, Boolean}, optional
+						If True, an Atoms object (from ASE) will be saved. The ordering of the 'atoms' in this object will have the same ordering as the natural hybrids
 			 obtained from get_natural_bonding_orbitals(). 
 			'NBO_model':	
-						{None, str}, optional
-						If different from None, an Atoms object will be saved. The ordering of the 'atoms' in this object will have the same ordering as the natural bonding orbitals
+						{False, Boolean}, optional
+						If True, an Atoms object (from ASE) will be saved. The ordering of the 'atoms' in this object will have the same ordering as the natural bonding orbitals
 			 obtained from get_natural_bonding_orbitals(). 
 			'core_and_valence': {None, bool)
 						If input is for an all-electron calculation (like Gaussian): set this to True."""
@@ -373,7 +373,7 @@ class NaturalOrbitals:
 #					print "Trying index", k,"bfs:",  bfs[k], "occ.:", n_i
 					if n_i<threshold:
 						break
-					print "found bond", n, atom.symbol, m, neigh.symbol
+#					print "found bond", n, atom.symbol, m, neigh.symbol
 					if type(self.NHO_model)!=type(False):
 						self.NHO_model+= Atom('X',atom.position+0.25*(neigh.position-atom.position))
 					if type(self.NBO_model)!=type(False):
@@ -486,14 +486,14 @@ class NaturalOrbitals:
 
 
 		"""
-		if h2==None:
+		if type(h2)==type(None):
 			if type(self.NAOs)==type(False):
 				self.get_NAO()
 			h2 = self.h_NAO
 			s2 = self.s_NAO	
 		self.energies=energies
 		t = np.zeros(len(energies))
-		if partition!=None:
+		if type(partition)!=type(None):
 			t = np.zeros( (len(partition)+1, len(energies)))			
 		GammaL = -2*SigmaL.imag.astype(np.dtype('complex'))
 		GammaR = -2*SigmaR.imag.astype(np.dtype('complex'))
@@ -509,8 +509,9 @@ class NaturalOrbitals:
 		for e, energy in enumerate(energies):
 #			print e, energy
 			Gr = np.linalg.inv(-SigmaL-SigmaR + s2*(energy+eta) - h2)
-			if partition==None:
+			if type(partition)==type(None):
 				t[e] = np.dot(GammaL, np.dot(Gr, np.dot(GammaR, Gr.T.conj()))).real.trace()
+#				print t[e]
 			else:
 #				print partition
 				for n,l in enumerate(partition):
@@ -519,6 +520,7 @@ class NaturalOrbitals:
 		self.t = t
 		self.transmission_uptodate= True
 		return t
+
 	def get_currents(self,Vs, T):
 		"Return currents in units of 2e^2/h. "
 		from scipy.integrate import simps
@@ -670,7 +672,7 @@ def get_basis_STOnG(symbols, indices, basis):
 
 
 def jmol_effective_Hamiltonian(mol, Heff, outfile = 'H_eff', cutoff=0.5, E_F=0.0):
-	###### plot direct NHO Hamiltonian ######
+	###### plot Hamiltonian ######
 	mol.center()
 	from ase.io import write
 	Heff-=np.identity(Heff.shape[0])*E_F
